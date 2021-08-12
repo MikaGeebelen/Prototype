@@ -14,4 +14,4 @@ echo Removing Build
 rmdir /q /s Build
 echo Removing Sln
 del "*.sln" /s /q
-APieceOfPlanet.uproject
+Prototype.uproject
