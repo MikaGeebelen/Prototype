@@ -21,9 +21,12 @@ ABaseEnemy::ABaseEnemy()
 	SetRootComponent(m_pCapsule);
 	m_pBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	m_pBody->SetupAttachment(m_pCapsule);
-
+	m_pLookDir = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("dir"));
+	m_pLookDir->SetupAttachment(m_pCapsule);
+	
 	m_pMoveComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
 	m_pMoveComp->UpdatedComponent = RootComponent;
+
 }
 
 // Called when the game starts or when spawned

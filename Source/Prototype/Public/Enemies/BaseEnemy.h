@@ -24,6 +24,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	UStaticMeshComponent* m_pBody;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	UStaticMeshComponent* m_pLookDir;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	UFloatingPawnMovement* m_pMoveComp;
 
 	
