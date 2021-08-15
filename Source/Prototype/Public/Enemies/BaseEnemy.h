@@ -32,7 +32,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual UPawnMovementComponent* GetMovementComponent() const override;
 	
 public:	
 	// Called every frame

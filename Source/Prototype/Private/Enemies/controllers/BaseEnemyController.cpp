@@ -5,55 +5,47 @@
 
 #include "Components/SceneComponent.h"
 
-
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
 
+#include "NavigationSystem.h"
+
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void ABaseEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
-	m_pPlayer = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	m_PlayerPos = m_pPlayer->GetFocalLocation();
+	
+	UE_LOG(LogTemp, Warning, TEXT("start"));
+	
+	m_pPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	m_pEnemy = GetPawn();
 }
 
 void ABaseEnemyController::ChasePlayer()
 {
-	if (FVector::Dist(m_PlayerPos, m_pEnemy->GetActorLocation()) > m_Range)
+	float distance{};
+	FVector locE = m_pEnemy->GetActorLocation();
+	//log position of target and self and distance between
+	//UE_LOG(LogTemp, Warning, TEXT("enemy pos = %f %f %f"), locE.X, locE.Y, locE.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("player pos = %f %f %f"), m_PlayerPos.X,m_PlayerPos.Y, m_PlayerPos.Z);
+	distance = FVector::Dist(m_pPlayer->GetActorLocation(), locE);
+	//UE_LOG(LogTemp, Warning, TEXT("distance = %f"), distance);
+	if (distance > m_Range)
 	{
-		if (IsMoveInputIgnored())
-		{
-			MoveToLocation(m_PlayerPos);
-			SetIgnoreMoveInput(true);
-		}
-
+		MoveToActor(m_pPlayer,-1.0f,true,true);
 	}
 	else
 	{
-		if (!IsMoveInputIgnored())
-		{
-			SetIgnoreMoveInput(false);
-			StopMovement();
-		}
+		StopMovement();
 	}
-}
-
-void ABaseEnemyController::LookAtPlayer()
-{
-	FVector lookDir = m_PlayerPos - m_pEnemy->GetActorLocation();
-	FRotator rotator = FRotationMatrix::MakeFromX(lookDir).Rotator();
-	FHitResult result{};
-	GetPawn()->SetActorRotation(rotator);
 }
 
 void ABaseEnemyController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	//update player pos
-	m_PlayerPos = m_pPlayer->GetFocalLocation();
 
 	ChasePlayer();
-	LookAtPlayer();
 }

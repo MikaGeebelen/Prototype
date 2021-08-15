@@ -19,10 +19,11 @@ ABaseEnemy::ABaseEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	m_pCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	SetRootComponent(m_pCapsule);
+	//create a mesh to represent an enemy
 	m_pBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	m_pBody->SetupAttachment(m_pCapsule);
 	m_pLookDir = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("dir"));
-	m_pLookDir->SetupAttachment(m_pCapsule);
+	m_pLookDir->SetupAttachment(m_pBody);
 	
 	m_pMoveComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
 	m_pMoveComp->UpdatedComponent = RootComponent;
@@ -33,11 +34,6 @@ ABaseEnemy::ABaseEnemy()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-UPawnMovementComponent* ABaseEnemy::GetMovementComponent() const
-{
-	return m_pMoveComp;
 }
 
 // Called every frame
