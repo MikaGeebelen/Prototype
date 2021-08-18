@@ -18,11 +18,11 @@ APlayerCharacter::APlayerCharacter()
 	m_pGunPosition = CreateDefaultSubobject<UArrowComponent>("Gun Position");
 	m_pGunPosition->SetupAttachment(RootComponent);
 
+	m_pWeaponManager = CreateDefaultSubobject<UWeaponManagerComponent>("Weapon Manager");
+
 	m_pCamera = CreateDefaultSubobject<UCameraComponent>("Player Camera");
 	m_pCamera->SetupAttachment(RootComponent);
 
-	m_pWeaponManager = CreateDefaultSubobject<UWeaponManagerComponent>("Weapon Manager");
-	m_pWeaponManager->SetAttachmentComponent(m_pCamera);
 }
 
 void APlayerCharacter::BeginPlay()
@@ -36,7 +36,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	if (m_UpdateWeaponPos && m_pWeaponManager)
 	{
-		//m_pWeaponManager->SetAttachmentComponent(m_pCamera);
+		m_pWeaponManager->SetAttachmentComponent(m_pCamera);
 		m_pWeaponManager->SetWeaponLocation(m_pGunPosition->GetComponentLocation());
 		m_UpdateWeaponPos = false;
 	}
