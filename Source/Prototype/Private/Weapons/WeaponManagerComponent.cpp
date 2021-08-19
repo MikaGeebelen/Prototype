@@ -20,6 +20,7 @@ void UWeaponManagerComponent::BeginPlay()
 	{
 		AWeaponBase* spawnedWeapon = Cast<AWeaponBase>(GetWorld()->SpawnActor(weaponClass));
 		spawnedWeapon->SetHidden(true);
+		spawnedWeapon->SetOwner(GetOwner());
 		m_SpawnedWeapons.Add(spawnedWeapon);
 	}
 

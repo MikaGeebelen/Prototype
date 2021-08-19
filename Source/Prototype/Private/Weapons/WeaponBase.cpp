@@ -16,6 +16,9 @@ AWeaponBase::AWeaponBase()
 	m_pRoot->SetVisibility(false);
 	SetRootComponent(m_pRoot);
 
+	m_pShootLocation = CreateDefaultSubobject<UArrowComponent>("Shooting Location");
+	m_pShootLocation->SetupAttachment(RootComponent);
+
 	m_pMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	m_pMesh->SetupAttachment(RootComponent);
 	m_pMesh->SetCollisionProfileName("NoCollision");
@@ -28,15 +31,22 @@ void AWeaponBase::BeginPlay()
 	
 }
 
+bool AWeaponBase::CanShoot()
+{
+	return m_FireRateTime >= 1 / m_FireRate;
+}
+
 // Called every frame
 void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (m_FireRateTime < 1 / m_FireRate)
+		m_FireRateTime += DeltaTime;
 }
 
 void AWeaponBase::ShootPrimary()
 {
-	UE_LOG(LogTemp, Warning, TEXT("WeaponBase has been shot"));
+	m_FireRateTime -= 1 / m_FireRate;
 }
 

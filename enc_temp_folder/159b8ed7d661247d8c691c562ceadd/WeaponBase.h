@@ -25,7 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
 		UArrowComponent* m_pShootLocation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
-		float m_MaxLineTraceDistance = 100000.f;
+		float m_MaxLineTraceDistance = 1000.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
 		bool m_DrawDebugLines = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")

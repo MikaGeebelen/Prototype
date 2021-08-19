@@ -46,7 +46,7 @@ void ADevGun::ShootPrimary()
 		FVector end{ start + (m_MaxLineTraceDistance * GetActorForwardVector()) };
 
 		if (m_DrawDebugLines)
-			DrawDebugLine(GetWorld(), start, end, { 255, 0, 0 }, false, 10);
+			DrawDebugLine(GetWorld(), start, end, { 255, 0, 0 }, true);
 
 		if (m_ShootSoundEffect)
 			UGameplayStatics::PlaySound2D(GetWorld(), m_ShootSoundEffect);
@@ -54,10 +54,9 @@ void ADevGun::ShootPrimary()
 		if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_WorldDynamic, linetraceParams))
 		{
 			auto hitActor = hit.Actor;
-
+			FVector loc = hitActor->GetActorLocation();
 			if (m_PrintDebugHelp)
 			{
-				FVector loc = hitActor->GetActorLocation();
 				UE_LOG(LogTemp, Warning, TEXT("-------------Hit Info-------------"));
 				UE_LOG(LogTemp, Warning, TEXT("Start Location %f %f %f | End Location %f %f %f"), start.X, start.Y, start.Z, end.X, end.Y, end.Z);
 				UE_LOG(LogTemp, Warning, TEXT("Hit: %s, Location %f %f %f"), *hit.Actor->GetName(), loc.X, loc.Y, loc.Z);
@@ -66,9 +65,7 @@ void ADevGun::ShootPrimary()
 
 			if (hitActor != GetOwner())
 			{
-				if (m_PrintDebugHelp)
-					UE_LOG(LogTemp, Warning, TEXT("%s has damaged %s"), *GetOwner()->GetName(), *hitActor->GetName());
-
+				UE_LOG(LogTemp, Warning, TEXT("%s has damaged %s"), *GetOwner()->GetName(), *hitActor->GetName());
 				hitActor->TakeDamage(m_Damage, {}, {}, this);
 			}
 		}
