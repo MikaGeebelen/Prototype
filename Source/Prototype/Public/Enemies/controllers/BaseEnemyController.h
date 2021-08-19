@@ -8,7 +8,6 @@
 
 class APawn;
 class UPawnSensingComponent;
-class UBehaviorTreeComponent;
 /**
  * 
  */
@@ -33,9 +32,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	UPawnSensingComponent* m_pPawnSensing;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
-	UBehaviorTreeComponent* m_pBehaviorTree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	UBehaviorTree* m_pBTData;

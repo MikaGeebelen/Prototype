@@ -3,7 +3,10 @@
 
 #include "BehaviourTree/BTTask_StopMove.h"
 
+#include "GameplayTask.h"
+
 void UBTTask_StopMove::OnGameplayTaskActivated(UGameplayTask& task)
 {
-	
+
 }
+

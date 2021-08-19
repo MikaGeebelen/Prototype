@@ -15,4 +15,6 @@ class PROTOTYPE_API UBTTask_StopMove : public UBTTaskNode
 	GENERATED_BODY()
 protected:
 	virtual void OnGameplayTaskActivated(UGameplayTask& task) override;
+
+
 };
