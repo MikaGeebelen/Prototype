@@ -8,44 +8,93 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
 
+//ai
 #include "NavigationSystem.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "Perception/PawnSensingComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
+ABaseEnemyController::ABaseEnemyController()
+{
+	m_pData = NewObject<UBlackboardData>();
+	m_pData->UpdatePersistentKey<UBlackboardKeyType_Object>(FName("Target"));
+
+	m_pBTData = NewObject<UBehaviorTree>();
+
+	m_pBlackBoard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
+	//m_pBehaviorTree = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTree"));
+
+	m_pPawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	m_pPawnSensing->SetPeripheralVisionAngle(160);
+}
+
 void ABaseEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	UE_LOG(LogTemp, Warning, TEXT("start"));
-	
+
 	m_pPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	m_pEnemy = GetPawn();
+	m_pBlackBoard->SetValueAsObject("Player", m_pPlayer);
 }
 
-void ABaseEnemyController::ChasePlayer()
+void ABaseEnemyController::OnPossess(APawn* InPawn)
 {
-	float distance{};
-	FVector locE = m_pEnemy->GetActorLocation();
-	//log position of target and self and distance between
-	//UE_LOG(LogTemp, Warning, TEXT("enemy pos = %f %f %f"), locE.X, locE.Y, locE.Z);
-	//UE_LOG(LogTemp, Warning, TEXT("player pos = %f %f %f"), m_PlayerPos.X,m_PlayerPos.Y, m_PlayerPos.Z);
-	distance = FVector::Dist(m_pPlayer->GetActorLocation(), locE);
-	//UE_LOG(LogTemp, Warning, TEXT("distance = %f"), distance);
-	if (distance > m_Range)
+	Super::OnPossess(InPawn);
+	if (InPawn)
 	{
-		MoveToActor(m_pPlayer,-1.0f,true,true);
+		m_pEnemy = InPawn;
+
+		bool ok = m_pBlackBoard->InitializeBlackboard(*m_pData);
+		if (!ok)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("blackboard failed to initialize"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("blackboard initialized"));
+		}
+		m_pBlackBoard->CacheBrainComponent(*m_pBehaviorTree);
+
+		m_pBlackBoard->SetValueAsBool("HasPlayerVision", false);
+		m_pBlackBoard->SetValueAsObject("SelfActor", InPawn);
+		m_pBlackBoard->SetValueAsBool("IsInRange", false);
+		RunBehaviorTree(m_pBTData);
 	}
 	else
 	{
-		StopMovement();
+		UE_LOG(LogTemp, Warning, TEXT("nothing to posses"));
 	}
+
 }
 
 void ABaseEnemyController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	//update player pos
+	if (m_pPawnSensing->CouldSeePawn(m_pPlayer))
+	{
+		m_pBlackBoard->SetValueAsBool("HasPlayerInVision", true);
+	}
+	else
+	{
+	m_pBlackBoard->SetValueAsBool("HasPlayerInVision", false);
+	}	
 
-	ChasePlayer();
+	if (FVector::Dist(m_pPlayer->GetActorLocation(),m_pEnemy->GetActorLocation()) > m_Range)
+	{
+		m_pBlackBoard->SetValueAsBool("IsInRange", true);
+	}
+	else
+	{
+		m_pBlackBoard->SetValueAsBool("IsInRange", false);
+	}
+
+	if (m_pBehaviorTree->IsRunning())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("sppeeeeed"));
+	}
 }
