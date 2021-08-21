@@ -23,6 +23,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	APawn* m_pEnemy;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	FVector m_LastPlayerLoc;
+
 	//Enemy specific
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
 	UBlackboardComponent* m_pBlackBoard;
@@ -38,7 +41,26 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "AISettings");
 	float m_Range = 200;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
+	FVector m_SpawnLoc;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
+	float m_WanderRange = 200;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
+	FVector m_WanderTarget;
+
+	//public funtions used as blueprint nodes
+	UFUNCTION(BlueprintCallable, Category = "AITask")
+	virtual bool ChasePlayer();
+
+	UFUNCTION(BlueprintCallable, Category = "AITask")
+	virtual bool WanderAroundSpawn();
+
+	UFUNCTION(BlueprintCallable, Category = "AITask")
+	virtual bool Patrol();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

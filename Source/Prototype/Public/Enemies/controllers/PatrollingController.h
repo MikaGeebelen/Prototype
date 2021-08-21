@@ -14,13 +14,18 @@ class PROTOTYPE_API APatrollingController : public ABaseEnemyController
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIPatrolSettings");
 	TArray<AActor*> m_Waypoints{};
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AIPatrolSettings");
 	int m_CurrentWaypoint = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIPatrolSettings");
+	FVector m_PatrolTarget;
+	
+	virtual bool Patrol() override;
 
 protected:
+	virtual void OnPossess(APawn* InPawn) override;
 	
-	virtual void Tick(float DeltaSeconds) override;
 };
