@@ -3,30 +3,41 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/NoExportTypes.h"
+#include "EnemyManager.generated.h"
 
-
-class BaseEnemy;
-class BaseEnemyController;
+class ABaseEnemy;
+class ABaseEnemyController;
+class APatrollingController;
 /**
  * 
  */
-class PROTOTYPE_API EnemyManager 
+UCLASS()
+class PROTOTYPE_API AEnemyManager : public AActor
 {
-public:
-	~EnemyManager();
-
-	static EnemyManager* GetInstance();
-
+	GENERATED_BODY()
 	
+public:
+	AEnemyManager() = default;
+	
+	AActor* SpawnWanderingEnemy(FVector spawnLoc, float range = 200, float wanderRange = 200);
+	AActor* SpawnPatrollingEnemy(FVector spawnLoc, TArray<AActor*> patrolArray, float range = 200);
 	
 private:
-	EnemyManager() = default;
 
-	EnemyManager(const EnemyManager&) = delete;
-	EnemyManager& operator=(const EnemyManager&) = delete;
-	EnemyManager(EnemyManager&&) = delete;
-	EnemyManager& operator=(EnemyManager&&) = delete;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABaseEnemy> m_WanderBase;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABaseEnemyController> m_WanderController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABaseEnemy> m_PatrolBase;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<APatrollingController> m_PatrolController;
 	
-	static EnemyManager* m_pEnemyManager;
 	
+	TArray<ABaseEnemy*> m_EnemyPawns;
+	TArray<ABaseEnemyController*> m_EnemyControllers;
+
 };
+

@@ -65,7 +65,6 @@ bool ABaseEnemyController::WanderAroundSpawn()
 		UE_LOG(LogTemp, Warning, TEXT("dir:%f,%f,%f"), dir.X,dir.Y,dir.Z);
 		dir = dir.RotateAngleAxis(degrees, FVector::UpVector);
 		UE_LOG(LogTemp, Warning, TEXT("dir after rot:%f,%f,%f"), dir.X, dir.Y, dir.Z);
-
 		
 		m_WanderTarget = m_SpawnLoc + dir;
 		MoveToLocation(m_WanderTarget);

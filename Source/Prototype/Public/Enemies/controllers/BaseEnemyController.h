@@ -17,6 +17,7 @@ class PROTOTYPE_API ABaseEnemyController : public AAIController
 	GENERATED_BODY()
 public:
 	ABaseEnemyController();
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	APawn* m_pPlayer;
 
@@ -39,17 +40,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	UBehaviorTree* m_pBTData;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "AISettings");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	float m_Range = 200;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
-	FVector m_SpawnLoc;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
 	float m_WanderRange = 200;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
-	FVector m_WanderTarget;
 
 	//public funtions used as blueprint nodes
 	UFUNCTION(BlueprintCallable, Category = "AITask")
@@ -68,4 +63,11 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "AIWanderSettings");
+	FVector m_SpawnLoc;
+
+	UPROPERTY(VisibleAnywhere, Category = "AIWanderSettings");
+	FVector m_WanderTarget;
 };
