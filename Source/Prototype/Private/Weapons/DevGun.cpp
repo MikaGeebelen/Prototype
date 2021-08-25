@@ -51,7 +51,7 @@ void ADevGun::ShootPrimary()
 		if (m_ShootSoundEffect)
 			UGameplayStatics::PlaySound2D(GetWorld(), m_ShootSoundEffect);
 
-		if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_WorldDynamic, linetraceParams))
+		if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Pawn, linetraceParams))
 		{
 			auto hitActor = hit.Actor;
 
@@ -69,7 +69,7 @@ void ADevGun::ShootPrimary()
 				if (m_PrintDebugHelp)
 					UE_LOG(LogTemp, Warning, TEXT("%s has damaged %s"), *GetOwner()->GetName(), *hitActor->GetName());
 
-				hitActor->TakeDamage(m_Damage, {}, {}, this);
+				hitActor->TakeDamage(m_Damage, {}, {}, GetOwner());
 			}
 		}
 
