@@ -39,5 +39,12 @@ bool APatrollingController::Patrol()
 void APatrollingController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	if (m_Waypoints.Num() > 0)
+	{
+		if (m_Waypoints[0])
+		{
+			m_PatrolTarget = m_Waypoints[0]->GetActorLocation();
+		}
+	}
 	m_pBlackBoard->SetValueAsVector("PatrolTarget", m_PatrolTarget);
 }
