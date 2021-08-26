@@ -75,5 +75,8 @@ private:
 
 	//Shooting
 	bool m_UpdateWeaponPos = true;
+	FRotator m_DefaultCameraRotation;
+
 	void ShootWeapon();
+	void UpdateWeaponRotation();
 };

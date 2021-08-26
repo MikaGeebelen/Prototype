@@ -39,6 +39,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	m_pHealth->SetMaxHealth(m_PlayerHealth, true);
 	m_OriginalRotation = m_pSpringArm->GetTargetRotation();
+	m_DefaultCameraRotation = m_pCamera->GetRelativeRotation();
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -130,6 +131,8 @@ void APlayerCharacter::VerticalLook(float axis)
 
 	rotation = UKismetMathLibrary::MakeRotator(0, currentPitch, currentRotation.Yaw);
 	m_pSpringArm->SetRelativeRotation(rotation);
+
+
 }
 
 void APlayerCharacter::HorizontalLook(float axis)
@@ -141,6 +144,7 @@ void APlayerCharacter::HorizontalLook(float axis)
 	FRotator currentRotation = m_pSpringArm->GetTargetRotation();
 	currentRotation.Roll = 0;
 	m_pSpringArm->SetRelativeRotation(currentRotation);
+	UpdateWeaponRotation();
 }
 
 void APlayerCharacter::LookInCameraDirection()
@@ -161,6 +165,31 @@ void APlayerCharacter::LookInCameraDirection()
 	AController* controller = GetController();
 	float originalYaw = m_OriginalRotation.Pitch;
 	controller->SetControlRotation(FRotator{ 0, angle, 0 });
+}
+
+void APlayerCharacter::UpdateWeaponRotation()
+{
+	if (!m_pWeapon)
+		return;
+
+	FVector cameraForward = m_pSpringArm->GetForwardVector();
+	float tempY = cameraForward.Y;
+	cameraForward.Y = cameraForward.Z;
+	cameraForward.Z = tempY;
+	FVector playerForward = GetActorForwardVector();
+
+	float angle1 = UKismetMathLibrary::Acos(FVector::DotProduct(cameraForward, playerForward));
+
+	FVector direction = FVector::CrossProduct(cameraForward, playerForward);
+
+	float angle = UKismetMathLibrary::Acos(cameraForward.CosineAngle2D(playerForward));
+	angle = UKismetMathLibrary::RadiansToDegrees(angle);
+	cameraForward.Z = 0;
+
+	if (direction.Z > 0)
+		angle *= -1;
+	
+	m_pWeapon->SetActorRelativeRotation(FRotator{ angle1 , 0, 0 });
 }
 
 void APlayerCharacter::ShootWeapon()

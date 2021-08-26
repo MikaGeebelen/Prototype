@@ -31,8 +31,6 @@ void ADevGun::Tick(float DeltaTime)
 
 void ADevGun::ShootPrimary()
 {
-	
-
 	FHitResult hit{};
 	FCollisionQueryParams linetraceParams{};
 	linetraceParams.AddIgnoredActor(this);
@@ -54,6 +52,9 @@ void ADevGun::ShootPrimary()
 		if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Pawn, linetraceParams))
 		{
 			auto hitActor = hit.Actor;
+
+			if (!hitActor.IsValid())
+				return;
 
 			if (m_PrintDebugHelp)
 			{
