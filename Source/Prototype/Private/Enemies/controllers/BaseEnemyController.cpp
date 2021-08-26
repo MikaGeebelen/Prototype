@@ -56,25 +56,7 @@ bool ABaseEnemyController::ChasePlayer()
 
 bool ABaseEnemyController::WanderAroundSpawn()
 {
-	if (m_pBlackBoard->IsValidKey(m_pBlackBoard->GetKeyID("WanderTarget")))
-	{
-		float distance = FMath::RandRange(0.0f, m_WanderRange);
-		float degrees = FMath::RandRange(0.0f, 360.0f);
-
-		FVector dir{distance,0,0 };
-		UE_LOG(LogTemp, Warning, TEXT("dir:%f,%f,%f"), dir.X,dir.Y,dir.Z);
-		dir = dir.RotateAngleAxis(degrees, FVector::UpVector);
-		UE_LOG(LogTemp, Warning, TEXT("dir after rot:%f,%f,%f"), dir.X, dir.Y, dir.Z);
-		
-		m_WanderTarget = m_SpawnLoc + dir;
-		MoveToLocation(m_WanderTarget);
-		m_pBlackBoard->SetValueAsVector("WanderTarget", m_WanderTarget);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 bool ABaseEnemyController::Patrol()
@@ -132,21 +114,26 @@ void ABaseEnemyController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	//update player pos
-	if (m_pPawnSensing->CouldSeePawn(m_pPlayer))
+	if (m_pPlayer)
 	{
-		m_pBlackBoard->SetValueAsBool("HasPlayerInVision", true);
+		if (m_pPawnSensing->CouldSeePawn(m_pPlayer))
+		{
+			m_pBlackBoard->SetValueAsBool("HasPlayerInVision", true);
+		}
+		else
+		{
+			m_pBlackBoard->SetValueAsBool("HasPlayerInVision", false);
+		}
 	}
-	else
+	if (m_pPlayer && m_pEnemy)
 	{
-		m_pBlackBoard->SetValueAsBool("HasPlayerInVision", false);
-	}	
-
-	if (FVector::Dist(m_pPlayer->GetActorLocation(),m_pEnemy->GetActorLocation()) > m_Range)
-	{
-		m_pBlackBoard->SetValueAsBool("IsInRange", false);
-	}
-	else
-	{
-		m_pBlackBoard->SetValueAsBool("IsInRange", true);
+		if (FVector::Dist(m_pPlayer->GetActorLocation(), m_pEnemy->GetActorLocation()) > m_Range)
+		{
+			m_pBlackBoard->SetValueAsBool("IsInRange", false);
+		}
+		else
+		{
+			m_pBlackBoard->SetValueAsBool("IsInRange", true);
+		}
 	}
 }

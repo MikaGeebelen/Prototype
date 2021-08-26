@@ -9,9 +9,8 @@
 class ABaseEnemy;
 class ABaseEnemyController;
 class APatrollingController;
-/**
- * 
- */
+class AWanderingController;
+
 UCLASS()
 class PROTOTYPE_API AEnemyManager : public AActor
 {
@@ -28,7 +27,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABaseEnemy> m_WanderBase;
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<ABaseEnemyController> m_WanderController;
+	TSubclassOf<AWanderingController> m_WanderController;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABaseEnemy> m_PatrolBase;

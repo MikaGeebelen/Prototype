@@ -42,10 +42,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	float m_Range = 200;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
-	float m_WanderRange = 200;
-
+	
 	//public funtions used as blueprint nodes
 	UFUNCTION(BlueprintCallable, Category = "AITask")
 	virtual bool ChasePlayer();
@@ -64,7 +61,6 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-private:
 	UPROPERTY(VisibleAnywhere, Category = "AIWanderSettings");
 	FVector m_SpawnLoc;
 

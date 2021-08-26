@@ -7,11 +7,11 @@
 
 #include "Enemies/controllers/BaseEnemyController.h"
 #include "Enemies/controllers/PatrollingController.h"
-
+#include "Enemies/controllers/WanderingController.h"
 
 AActor* AEnemyManager::SpawnWanderingEnemy(FVector spawnLoc, float range, float wanderRange)
 {
-	ABaseEnemyController* pController = Cast<ABaseEnemyController>(GetWorld()->SpawnActor(m_WanderController));
+	AWanderingController* pController = Cast<AWanderingController>(GetWorld()->SpawnActor(m_WanderController));
 
 	const FVector loc = spawnLoc;
 	const FRotator rot{};
