@@ -8,6 +8,8 @@ echo Removing Intermediate:
 rmdir /q /s "Intermediate"
 echo Removing Saved: 
 rmdir /q /s "Saved"
+echo Removing enc_temp_folder
+rmdir /q /s enc_temp_folder
 echo Removing DerivedDataCache
 rmdir /q /s DerivedDataCache
 echo Removing Build

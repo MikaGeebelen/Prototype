@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "DrawDebugHelpers.h"
 #include "WeaponBase.generated.h"
 
 class UStaticMeshComponent;
@@ -21,13 +22,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Root")
 		UArrowComponent* m_pRoot;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		UArrowComponent* m_pShootLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		float m_MaxLineTraceDistance = 100000.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		bool m_DrawDebugLines = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		bool m_PrintDebugHelp = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		UStaticMeshComponent* m_pMesh;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		float m_Damage = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		float m_FireRate = 5.f;
+	UPROPERTY(VisibleAnywhere, Category = "Shooting")
+		float m_FireRateTime = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		USoundBase* m_ShootSoundEffect;
+
+	virtual void BeginPlay() override;
+	bool CanShoot();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
