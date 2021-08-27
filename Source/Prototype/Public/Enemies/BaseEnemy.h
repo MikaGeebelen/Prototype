@@ -7,7 +7,9 @@
 #include "BaseEnemy.generated.h"
 
 class UStaticMeshComponent;
-
+class UHealthComponent;
+class UWeaponManagerComponent;
+class UArrowComponent;
 
 UCLASS()
 class PROTOTYPE_API ABaseEnemy : public ACharacter
@@ -21,8 +23,14 @@ public:
 	UStaticMeshComponent* m_pBody;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	UStaticMeshComponent* m_pLookDir;
-
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	UHealthComponent* m_pHealth;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "weapon");
+	UWeaponManagerComponent* m_pWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "weapon")
+	UArrowComponent* m_pGunPosition;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,4 +38,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
