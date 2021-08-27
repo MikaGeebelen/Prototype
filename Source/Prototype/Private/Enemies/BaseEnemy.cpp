@@ -8,26 +8,19 @@
 
 
 #include "GameFramework/FloatingPawnMovement.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "AIController.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	m_pCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	SetRootComponent(m_pCapsule);
-	//create a mesh to represent an enemy
 	m_pBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
-	m_pBody->SetupAttachment(m_pCapsule);
+	m_pBody->SetupAttachment(RootComponent);
 	m_pLookDir = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("dir"));
 	m_pLookDir->SetupAttachment(m_pBody);
-	
-	m_pMoveComp = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
-	m_pMoveComp->UpdatedComponent = RootComponent;
-
 }
 
 // Called when the game starts or when spawned
@@ -41,5 +34,3 @@ void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-
