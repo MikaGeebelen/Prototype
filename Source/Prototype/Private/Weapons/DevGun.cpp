@@ -74,7 +74,7 @@ void ADevGun::ShootPrimary()
 			}
 		}
 
-		AWeaponBase::ShootPrimary();
+		ResetFireRateTime();
 	}
 }
 

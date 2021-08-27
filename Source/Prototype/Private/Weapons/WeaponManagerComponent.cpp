@@ -28,6 +28,16 @@ void UWeaponManagerComponent::BeginPlay()
 	UpdateWeaponLocation();
 }
 
+void UWeaponManagerComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	for (AWeaponBase* weapon : m_SpawnedWeapons)
+	{
+		if (weapon)
+			weapon->Destroy();
+	}
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+}
+
 void UWeaponManagerComponent::SetWeaponLocation(const FVector& relativeLocation)
 {
 	m_WeaponRelativeLocation = relativeLocation;

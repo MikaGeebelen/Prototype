@@ -37,6 +37,8 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+		bool m_CanHoldDownButton = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
 		float m_Damage = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
 		float m_FireRate = 5.f;
@@ -46,13 +48,22 @@ protected:
 		USoundBase* m_ShootSoundEffect;
 
 	virtual void BeginPlay() override;
+
 	bool CanShoot();
+
+	void ResetFireRateTime();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Pure virtual functions
 	// To be implemented by the inherited classes
-	//virtual void ShootPrimary() PURE_VIRTUAL(AWeaponBase::ShootPrimary, );
-	virtual void ShootPrimary();
+	virtual void ShootPrimary() PURE_VIRTUAL(AWeaponBase::ShootPrimary, );
+	//virtual void ShootPrimary();
+
+	bool IsFiring();
+	void IsFiring(bool firing);
+
+private:
+	bool m_IsFiring = false;
 };

@@ -36,6 +36,11 @@ bool AWeaponBase::CanShoot()
 	return m_FireRateTime >= 1 / m_FireRate;
 }
 
+bool AWeaponBase::IsFiring()
+{
+	return m_IsFiring;
+}
+
 // Called every frame
 void AWeaponBase::Tick(float DeltaTime)
 {
@@ -43,10 +48,23 @@ void AWeaponBase::Tick(float DeltaTime)
 
 	if (m_FireRateTime < 1 / m_FireRate)
 		m_FireRateTime += DeltaTime;
+
+	if (IsFiring() && m_CanHoldDownButton)
+		ShootPrimary();
 }
 
-void AWeaponBase::ShootPrimary()
+void AWeaponBase::ResetFireRateTime()
 {
-	m_FireRateTime -= 1 / m_FireRate;
+	m_FireRateTime = 0;
 }
+
+void AWeaponBase::IsFiring(bool firing)
+{
+	m_IsFiring = firing;
+}
+
+//void AWeaponBase::ShootPrimary()
+//{
+//	m_FireRateTime -= 1 / m_FireRate;
+//}
 
