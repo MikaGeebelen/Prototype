@@ -85,7 +85,7 @@ bool APatrolPylon::SendPatrol()
 			patrolPoints.Push(Cast<APatrolPylon>(m_OtherPylons[i])->GetArriveLocation(GetActorLocation()));
 			patrolPoints.Push(GetStartLocation(m_OtherPylons[i]->GetActorLocation()));
 			UPrototypeGameInstance* instance = Cast<UPrototypeGameInstance>(GetGameInstance());
-			m_CurrentPatrolUnits.Push(instance->GetEnemyManager()->SpawnPatrollingEnemy(patrolPoints[1]->GetActorLocation(), patrolPoints, 400));
+			m_CurrentPatrolUnits.Push(instance->GetEnemyManager()->SpawnPatrollingEnemy(patrolPoints[1]->GetActorLocation(), patrolPoints, 1000));
 			return true;
 		}
 
@@ -102,7 +102,7 @@ bool APatrolPylon::IsPatrolDead()
 {
 	for (AActor* unit : m_CurrentPatrolUnits)
 	{
-		if (unit)
+		if (IsValid(unit))
 		{
 			return false;
 		}
@@ -116,10 +116,8 @@ void APatrolPylon::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
 
-
 	m_CanSpawn = IsPatrolDead();
 
-	
 	if (m_CanSpawn)
 	{
 		m_TimeToSpawn += deltaTime;

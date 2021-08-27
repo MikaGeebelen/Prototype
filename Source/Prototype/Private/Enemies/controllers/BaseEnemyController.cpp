@@ -4,10 +4,13 @@
 #include "Enemies/controllers/BaseEnemyController.h"
 
 #include "Components/SceneComponent.h"
+#include "Weapons/WeaponManagerComponent.h"
+#include "Weapons/WeaponBase.h"
 
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
 
+#include "Enemies/BaseEnemy.h"
 //ai
 #include "NavigationSystem.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
@@ -29,8 +32,8 @@ ABaseEnemyController::ABaseEnemyController()
 	m_pBlackBoard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
 
 	m_pPawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	m_pPawnSensing->SetPeripheralVisionAngle(160);
 }
+
 
 bool ABaseEnemyController::ChasePlayer() 
 {
@@ -63,6 +66,31 @@ bool ABaseEnemyController::Patrol()
 {
 	return true;
 }
+
+void ABaseEnemyController::Shoot()
+{
+	UWeaponManagerComponent* weapon = Cast<ABaseEnemy>(GetPawn())->m_pWeapon;
+	if (weapon)
+	{
+		weapon->GetSelectedWeapon()->ShootPrimary();
+	}
+}
+
+FVector ABaseEnemyController::GetDodgeLoc()
+{
+	//reposition around player
+	float distance = FMath::RandRange((m_Range * 3)/4, m_Range);
+	float degrees = FMath::RandRange(-90.0f, 90.0f);
+	
+	FVector newDir{ m_pEnemy->GetActorLocation() - m_pPlayer->GetActorLocation() };
+	
+	newDir.Normalize();
+	newDir = newDir * distance;
+	newDir = newDir.RotateAngleAxis(degrees, FVector::UpVector);
+	
+	return  newDir + m_pPlayer->GetActorLocation();
+}
+
 
 void ABaseEnemyController::BeginPlay()
 {
@@ -118,6 +146,7 @@ void ABaseEnemyController::Tick(float DeltaSeconds)
 	{
 		if (m_pPawnSensing->CouldSeePawn(m_pPlayer))
 		{
+			m_pBlackBoard->SetValueAsObject("Player", m_pPlayer);
 			m_pBlackBoard->SetValueAsBool("HasPlayerInVision", true);
 		}
 		else

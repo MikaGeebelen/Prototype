@@ -44,6 +44,7 @@ public:
 	float m_Range = 200;
 	
 	//public funtions used as blueprint nodes
+	
 	UFUNCTION(BlueprintCallable, Category = "AITask")
 	virtual bool ChasePlayer();
 
@@ -52,6 +53,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AITask")
 	virtual bool Patrol();
+
+	UFUNCTION(BlueprintCallable, Category = "AITask")
+	virtual void Shoot();
+
+	UFUNCTION(BlueprintCallable, Category = "AITask")
+	virtual FVector GetDodgeLoc();
 
 protected:
 	// Called when the game starts or when spawned
