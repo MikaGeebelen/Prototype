@@ -78,5 +78,6 @@ private:
 	FRotator m_DefaultCameraRotation;
 
 	void ShootWeapon();
+	void ReleaseWeapon();
 	void UpdateWeaponRotation();
 };

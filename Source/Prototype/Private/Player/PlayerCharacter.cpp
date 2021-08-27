@@ -60,6 +60,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	//Bind input to functions
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &APlayerCharacter::Jump);
 	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Pressed, this, &APlayerCharacter::ShootWeapon);
+	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Released, this, &APlayerCharacter::ReleaseWeapon);
 
 	PlayerInputComponent->BindAxis("VerticalMovement", this, &APlayerCharacter::VerticalMovement);
 	PlayerInputComponent->BindAxis("HorizontalMovement", this, &APlayerCharacter::HorizontalMovement);
@@ -173,23 +174,8 @@ void APlayerCharacter::UpdateWeaponRotation()
 		return;
 
 	FVector cameraForward = m_pSpringArm->GetForwardVector();
-	float tempY = cameraForward.Y;
-	cameraForward.Y = cameraForward.Z;
-	cameraForward.Z = tempY;
-	FVector playerForward = GetActorForwardVector();
-
-	float angle1 = UKismetMathLibrary::Acos(FVector::DotProduct(cameraForward, playerForward));
-
-	FVector direction = FVector::CrossProduct(cameraForward, playerForward);
-
-	float angle = UKismetMathLibrary::Acos(cameraForward.CosineAngle2D(playerForward));
-	angle = UKismetMathLibrary::RadiansToDegrees(angle);
-	cameraForward.Z = 0;
-
-	if (direction.Z > 0)
-		angle *= -1;
-	
-	m_pWeapon->SetActorRelativeRotation(FRotator{ angle1 , 0, 0 });
+	FRotator rotation = cameraForward.ToOrientationRotator();
+	m_pWeapon->SetActorRelativeRotation(FRotator{ rotation.Pitch - 10.f , 0, 0 });
 }
 
 void APlayerCharacter::ShootWeapon()
@@ -204,6 +190,15 @@ void APlayerCharacter::ShootWeapon()
 	{
 		LookInCameraDirection();
 		m_pWeapon->ShootPrimary();
+		m_pWeapon->IsFiring(true);
+	}
+}
+
+void APlayerCharacter::ReleaseWeapon()
+{
+	if (m_pWeapon)
+	{
+		m_pWeapon->IsFiring(false);
 	}
 }
 
