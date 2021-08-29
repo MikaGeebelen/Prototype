@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "PatrolPylon.generated.h"
 
+class UArrowComponent;
+class UWeaponManagerComponent;
+
 UCLASS()
 class PROTOTYPE_API APatrolPylon : public AActor
 {
@@ -18,19 +21,10 @@ public:
 	virtual AActor* GetArriveLocation(FVector otherPylon);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
-	TArray<AActor*>  m_PatrolStarts;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	UStaticMeshComponent*  m_pPillar;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
-	float m_MaxTimeToSpawn = 20;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AISettings");
-	float m_TimeToSpawn = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
-	bool m_CanSpawn = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	TArray<AActor*> m_Entrances;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -41,9 +35,35 @@ protected:
 	virtual bool SendPatrol();
 
 	virtual bool IsPatrolDead();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	bool m_IsPlayerFight = false;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	bool m_CanSpawn = true;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AISettings");
+	float m_TimeToSpawn = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	float m_MaxTimeToSpawn = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	TArray<UArrowComponent*> m_HealhtOrbSpawnPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	TArray<UArrowComponent*> m_WeaponSpawnPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	UWeaponManagerComponent* m_pWeapons;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	TArray<AActor*>  m_PatrolStarts;
 
 private:
+	
+	TArray<AActor*> m_HealthPoints;
+	
 	TArray<AActor*> m_OtherPylons;
 
 	TArray<AActor*> m_CurrentPatrolUnits;

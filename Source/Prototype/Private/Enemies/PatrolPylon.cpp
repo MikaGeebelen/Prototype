@@ -8,6 +8,10 @@
 
 #include "Engine/Classes/Kismet/GameplayStatics.h"
 #include "Math/NumericLimits.h"
+#include "NavModifierComponent.h"
+
+#include "NavAreas/NavArea_Null.h"
+#include "NavAreas/NavArea_Default.h"
 
 // Sets default values
 APatrolPylon::APatrolPylon()
@@ -115,7 +119,7 @@ bool APatrolPylon::IsPatrolDead()
 void APatrolPylon::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
-
+	//spawn patrols
 	m_CanSpawn = IsPatrolDead();
 
 	if (m_CanSpawn)
@@ -128,6 +132,30 @@ void APatrolPylon::Tick(float deltaTime)
 			{
 				m_CanSpawn = false;
 			}
+		}
+	}
+
+	if (m_IsPlayerFight)
+	{
+		for (AActor* pEntrance : m_Entrances)
+		{
+			pEntrance->SetActorEnableCollision(true);
+
+			USceneComponent* pRoot = pEntrance->GetRootComponent();
+
+			UNavModifierComponent* pNav = Cast<UNavModifierComponent>(pEntrance->GetComponentByClass(UNavModifierComponent::StaticClass()));
+			if (pNav)
+			{
+				pNav->SetAreaClass(UNavArea_Default::StaticClass());
+			}
+
+			
+			UStaticMeshComponent* pMesh = Cast<UStaticMeshComponent>(pRoot);
+			if (pMesh)
+			{
+				pMesh->SetCollisionProfileName({ "BlockAll" });
+			}
+			
 		}
 	}
 }

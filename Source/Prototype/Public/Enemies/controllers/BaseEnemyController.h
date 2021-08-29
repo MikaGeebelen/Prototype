@@ -8,6 +8,7 @@
 
 class APawn;
 class UPawnSensingComponent;
+class UPawnNoiseEmitterComponent;
 /**
  * 
  */
@@ -36,6 +37,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	UPawnSensingComponent* m_pPawnSensing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	UPawnNoiseEmitterComponent* m_pNoiseEmitter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	UBehaviorTree* m_pBTData;

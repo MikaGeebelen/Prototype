@@ -4,9 +4,11 @@
 #include "Enemies/controllers/BaseEnemyController.h"
 
 #include "Components/SceneComponent.h"
+#include "Components/HealthComponent.h"
 #include "Weapons/WeaponManagerComponent.h"
 #include "Weapons/WeaponBase.h"
 
+#include "GameFramework/Actor.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
 
@@ -17,7 +19,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Components/HealthComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -32,6 +36,8 @@ ABaseEnemyController::ABaseEnemyController()
 	m_pBlackBoard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
 
 	m_pPawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+
+	m_pNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Noise"));
 }
 
 
@@ -129,7 +135,7 @@ void ABaseEnemyController::OnPossess(APawn* InPawn)
 		m_pBlackBoard->SetValueAsBool("HasPlayerVision", false);
 		m_pBlackBoard->SetValueAsObject("SelfActor", InPawn);
 		m_pBlackBoard->SetValueAsBool("IsInRange", false);
-
+		m_pBlackBoard->SetValueAsBool("IsDamaged", false);
 	}
 	else
 	{
@@ -163,6 +169,15 @@ void ABaseEnemyController::Tick(float DeltaSeconds)
 		else
 		{
 			m_pBlackBoard->SetValueAsBool("IsInRange", true);
+		}
+	}
+	
+	UHealthComponent* health = Cast<UHealthComponent>(m_pEnemy->GetComponentByClass(UHealthComponent::StaticClass()));
+	if (health)
+	{
+		if (health->GetMaxHealth() > health->GetHealth())
+		{
+			m_pBlackBoard->SetValueAsBool("IsDamaged", true);
 		}
 	}
 }
