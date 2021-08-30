@@ -40,8 +40,10 @@ public:
 		bool IsDead();
 
 private:
-	int m_Health;
-	int m_MaxHealth = 10;
+	UPROPERTY(VisibleAnywhere, Category = "Health")
+		int m_Health;
+	UPROPERTY(VisibleAnywhere, Category = "Health")
+		int m_MaxHealth = 10;
 
 	void ClampHealth();
 };

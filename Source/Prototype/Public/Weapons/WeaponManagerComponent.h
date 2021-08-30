@@ -36,6 +36,8 @@ public:
 	void SetWeaponLocation(const FVector& relativeLocation);
 	void SetAttachmentComponent(USceneComponent* component);
 
+
+
 	AWeaponBase* GetSelectedWeapon();
 
 private:

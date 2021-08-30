@@ -40,6 +40,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void SetDirection(FVector direction);
+	void SetDamage(float damage);
 
 private:
 	UFUNCTION()
@@ -49,6 +50,9 @@ private:
 			int32 OtherBodyIndex,
 			bool bFromSweep,
 			const FHitResult& SweepResult);
+
+	float m_Damage = 1.f;
+
 
 protected:
 	FVector m_Direction = {1, 0, 0};
