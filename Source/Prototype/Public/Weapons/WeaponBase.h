@@ -9,6 +9,8 @@
 
 class UStaticMeshComponent;
 class UArrowComponent;
+class UCapsuleComponent;
+class ABullet;
 
 UCLASS()
 class PROTOTYPE_API AWeaponBase : public AActor
@@ -20,7 +22,7 @@ public:
 	AWeaponBase();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Root")
-		UArrowComponent* m_pRoot;
+		UCapsuleComponent* m_pCollider;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
 		UArrowComponent* m_pShootLocation;
@@ -44,14 +46,25 @@ protected:
 		float m_FireRate = 5.f;
 	UPROPERTY(VisibleAnywhere, Category = "Shooting")
 		float m_FireRateTime = 0.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
 		USoundBase* m_ShootSoundEffect;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
+		TSubclassOf<ABullet> m_BulletType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
+		float m_BulletMaxLifeSpawn = 20.f;
+
+	UPROPERTY(EditAnywhere, Category = "Pickup")
+		float m_RotationSpeed = 10.f;
+
+
 	virtual void BeginPlay() override;
 
-	bool CanShoot();
+	bool IsPickUp();
 
 	void ResetFireRateTime();
+	void ShootBullet();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -61,9 +74,18 @@ public:
 	virtual void ShootPrimary() PURE_VIRTUAL(AWeaponBase::ShootPrimary, );
 	//virtual void ShootPrimary();
 
+	bool CanShoot();
 	bool IsFiring();
 	void IsFiring(bool firing);
 
 private:
 	bool m_IsFiring = false;
+
+	UFUNCTION()
+		void BeginOverlap(UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult& SweepResult);
 };

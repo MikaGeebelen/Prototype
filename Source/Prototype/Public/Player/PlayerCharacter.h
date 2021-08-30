@@ -47,6 +47,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UWeaponManagerComponent* GetWeaponManager();
 
 private:
 	//Health
@@ -75,6 +76,7 @@ private:
 
 	//Shooting
 	bool m_UpdateWeaponPos = true;
+	bool m_IsWeaponFiring = false;
 	FRotator m_DefaultCameraRotation;
 
 	void ShootWeapon();

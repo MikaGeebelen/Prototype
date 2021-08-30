@@ -6,7 +6,6 @@
 #include "WeaponBase.h"
 #include "DevGun.generated.h"
 
-class ABullet;
 
 UCLASS()
 class PROTOTYPE_API ADevGun : public AWeaponBase
@@ -16,9 +15,6 @@ class PROTOTYPE_API ADevGun : public AWeaponBase
 public:	
 	// Sets default values for this actor's properties
 	ADevGun();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
-		TSubclassOf<ABullet> m_BulletType;
 
 protected:
 	// Called when the game starts or when spawned

@@ -26,7 +26,6 @@ void ADevGun::BeginPlay()
 void ADevGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ADevGun::ShootPrimary()
@@ -49,30 +48,31 @@ void ADevGun::ShootPrimary()
 		if (m_ShootSoundEffect)
 			UGameplayStatics::PlaySound2D(GetWorld(), m_ShootSoundEffect);
 
-		if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Pawn, linetraceParams))
-		{
-			auto hitActor = hit.Actor;
+		ShootBullet();
+		//if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Pawn, linetraceParams))
+		//{
+		//	auto hitActor = hit.Actor;
 
-			if (!hitActor.IsValid())
-				return;
+		//	if (!hitActor.IsValid())
+		//		return;
 
-			if (m_PrintDebugHelp)
-			{
-				FVector loc = hitActor->GetActorLocation();
-				UE_LOG(LogTemp, Warning, TEXT("-------------Hit Info-------------"));
-				UE_LOG(LogTemp, Warning, TEXT("Start Location %f %f %f | End Location %f %f %f"), start.X, start.Y, start.Z, end.X, end.Y, end.Z);
-				UE_LOG(LogTemp, Warning, TEXT("Hit: %s, Location %f %f %f"), *hit.Actor->GetName(), loc.X, loc.Y, loc.Z);
-				UE_LOG(LogTemp, Warning, TEXT("----------------------------------"));
-			}
+		//	if (m_PrintDebugHelp)
+		//	{
+		//		FVector loc = hitActor->GetActorLocation();
+		//		UE_LOG(LogTemp, Warning, TEXT("-------------Hit Info-------------"));
+		//		UE_LOG(LogTemp, Warning, TEXT("Start Location %f %f %f | End Location %f %f %f"), start.X, start.Y, start.Z, end.X, end.Y, end.Z);
+		//		UE_LOG(LogTemp, Warning, TEXT("Hit: %s, Location %f %f %f"), *hit.Actor->GetName(), loc.X, loc.Y, loc.Z);
+		//		UE_LOG(LogTemp, Warning, TEXT("----------------------------------"));
+		//	}
 
-			if (hitActor != GetOwner())
-			{
-				if (m_PrintDebugHelp)
-					UE_LOG(LogTemp, Warning, TEXT("%s has damaged %s"), *GetOwner()->GetName(), *hitActor->GetName());
+		//	if (hitActor != GetOwner())
+		//	{
+		//		if (m_PrintDebugHelp)
+		//			UE_LOG(LogTemp, Warning, TEXT("%s has damaged %s"), *GetOwner()->GetName(), *hitActor->GetName());
 
-				hitActor->TakeDamage(m_Damage, {}, {}, GetOwner());
-			}
-		}
+		//		hitActor->TakeDamage(m_Damage, {}, {}, GetOwner());
+		//	}
+		//}
 
 		ResetFireRateTime();
 	}

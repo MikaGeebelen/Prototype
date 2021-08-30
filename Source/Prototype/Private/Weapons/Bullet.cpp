@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -54,13 +55,25 @@ void ABullet::SetDirection(FVector direction)
 	m_Direction = direction;
 }
 
-void ABullet::BeginOverlap(UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
+void ABullet::SetDamage(float damage)
+{
+	m_Damage = damage;
+}
+
+void ABullet::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, 
-	bool bFromSweep, 
+	int32 OtherBodyIndex,
+	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-
+	AActor* owner = GetController()->GetPawn();
+	if (owner && OtherActor->GetOwner() != owner)
+	{
+		//if (GetController()->GetPawn() && OtherActor->GetOwner())
+			//UE_LOG(LogTemp, Warning, TEXT("Owner: %s, Other Owner: %s"), *GetController()->GetPawn()->GetName(), *OtherActor->GetOwner()->GetName());
+		OtherActor->TakeDamage(m_Damage, {}, {}, owner);
+		Destroy();
+	}
 }
 

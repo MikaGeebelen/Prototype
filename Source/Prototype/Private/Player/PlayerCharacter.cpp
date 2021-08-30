@@ -51,6 +51,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 		m_pWeaponManager->SetWeaponLocation(m_pGunPosition->GetComponentLocation());
 		m_UpdateWeaponPos = false;
 	}
+
+	if (m_IsWeaponFiring)
+	{
+		LookInCameraDirection();
+		UpdateWeaponRotation();
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -68,10 +74,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("HorizontalLook", this, &APlayerCharacter::HorizontalLook);
 }
 
+UWeaponManagerComponent* APlayerCharacter::GetWeaponManager()
+{
+	return m_pWeaponManager;
+}
+
 float APlayerCharacter::TakeDamage(float DamageAmount,
-	FDamageEvent const& DamageEvent, 
-	AController* EventInstigator, 
-	AActor* DamageCauser)
+                                   FDamageEvent const& DamageEvent, 
+                                   AController* EventInstigator, 
+                                   AActor* DamageCauser)
 {
 	if (m_pHealth)
 	{
@@ -106,9 +117,6 @@ void APlayerCharacter::HorizontalMovement(float axis)
 {
 	if (abs(axis) > 0.01f)
 	{
-		//AddMovementInput(GetActorRightVector(), axis);
-		//FVector right = m_pCamera->GetRightVector();
-		//right.Z = 0;
 		LookInCameraDirection();
 		AddMovementInput(GetActorRightVector(), axis);
 	}
@@ -132,13 +140,11 @@ void APlayerCharacter::VerticalLook(float axis)
 
 	rotation = UKismetMathLibrary::MakeRotator(0, currentPitch, currentRotation.Yaw);
 	m_pSpringArm->SetRelativeRotation(rotation);
-
-
+	UpdateWeaponRotation();
 }
 
 void APlayerCharacter::HorizontalLook(float axis)
 {
-	//AddControllerYawInput(axis);
 	FRotator rotation = UKismetMathLibrary::MakeRotator(0, 0, axis);
 	m_pSpringArm->AddLocalRotation(rotation);
 
@@ -190,7 +196,8 @@ void APlayerCharacter::ShootWeapon()
 	{
 		LookInCameraDirection();
 		m_pWeapon->ShootPrimary();
-		m_pWeapon->IsFiring(true);
+		m_IsWeaponFiring = true;
+		m_pWeapon->IsFiring(m_IsWeaponFiring);
 	}
 }
 
@@ -198,7 +205,8 @@ void APlayerCharacter::ReleaseWeapon()
 {
 	if (m_pWeapon)
 	{
-		m_pWeapon->IsFiring(false);
+		m_IsWeaponFiring = false;
+		m_pWeapon->IsFiring(m_IsWeaponFiring);
 	}
 }
 
