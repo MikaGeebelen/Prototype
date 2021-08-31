@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "PatrolPylon.generated.h"
 
+class UArrowComponent;
+class UWeaponManagerComponent;
+
 UCLASS()
 class PROTOTYPE_API APatrolPylon : public AActor
 {
@@ -18,19 +21,10 @@ public:
 	virtual AActor* GetArriveLocation(FVector otherPylon);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
-	TArray<AActor*>  m_PatrolStarts;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	UStaticMeshComponent*  m_pPillar;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
-	float m_MaxTimeToSpawn = 20;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AISettings");
-	float m_TimeToSpawn = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIWanderSettings");
-	bool m_CanSpawn = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	TArray<AActor*> m_Entrances;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -42,14 +36,53 @@ protected:
 
 	virtual bool IsPatrolDead();
 
+	virtual void Destroyed() override;
 
-private:
+	void ToggleGates(bool canPass);
+
+	void ShootPlayer();
+
+	void SpawnDefenses();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	bool m_IsPlayerFight = false;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	bool m_CanSpawn = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	bool m_IsInCombat = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AISettings");
+	float m_TimeToSpawn = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	float m_MaxTimeToSpawn = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	UArrowComponent* m_pGunPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	UWeaponManagerComponent* m_pWeapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	TArray<AActor*>  m_PatrolStarts;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	APawn* m_pPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	TSubclassOf<AActor> m_pHealthOrbClass;
+
+	TArray<AActor*> m_HealthPoints;
+
 	TArray<AActor*> m_OtherPylons;
 
 	TArray<AActor*> m_CurrentPatrolUnits;
-	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 };

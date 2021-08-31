@@ -24,6 +24,7 @@ public:
 	
 private:
 
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABaseEnemy> m_WanderBase;
 	UPROPERTY(EditAnywhere)

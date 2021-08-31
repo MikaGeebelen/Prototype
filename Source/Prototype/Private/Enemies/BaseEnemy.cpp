@@ -37,13 +37,16 @@ void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	m_pWeapon->SetWeaponLocation(m_pGunPosition->GetComponentLocation());
+	//GetController()
 }
 
 // Called every frame
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("The Actor's name is %d"),m_pHealth->GetHealth());
+
+	
+	//UE_LOG(LogTemp, Warning, TEXT("The Actor's name is %d"),m_pHealth->GetHealth());
 }
 
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

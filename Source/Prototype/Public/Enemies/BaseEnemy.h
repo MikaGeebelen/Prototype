@@ -34,7 +34,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemySettings");
+	float m_ActivateDelay = 5.f;
+	float m_Time = 0.f;
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

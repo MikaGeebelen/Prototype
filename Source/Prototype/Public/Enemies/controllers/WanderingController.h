@@ -19,6 +19,8 @@ public:
 	float m_WanderRange = 200;
 	
 	virtual bool WanderAroundSpawn() override;
+
+	virtual FVector GetDodgeLoc();
 	
 private:
 

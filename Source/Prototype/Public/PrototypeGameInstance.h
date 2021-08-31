@@ -13,7 +13,7 @@ class PROTOTYPE_API UPrototypeGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-        UFUNCTION(BlueprintPure,Category = "Singleton")
+        UFUNCTION(BlueprintCallable,Category = "Singleton")
         AEnemyManager* GetEnemyManager();
 private:
 	UPROPERTY(VisibleAnywhere,Category = "Managers")
