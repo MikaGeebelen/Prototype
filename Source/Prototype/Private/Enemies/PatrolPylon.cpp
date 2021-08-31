@@ -205,7 +205,7 @@ void APatrolPylon::ShootPlayer()
 	playerDir.Normalize();
 
 	m_pGunPos->SetRelativeRotation(playerDir.ToOrientationRotator());
-	//m_pWeapon->GetSelectedWeapon()->ShootPrimary();
+	m_pWeapon->GetSelectedWeapon()->ShootPrimary();
 }
 
 void APatrolPylon::SpawnDefenses()

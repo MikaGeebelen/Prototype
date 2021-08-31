@@ -46,6 +46,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
 	float m_Range = 200;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	float m_CountDown = 5.f;
 	
 	//public funtions used as blueprint nodes
 	

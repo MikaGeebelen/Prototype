@@ -67,13 +67,16 @@ void ABullet::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	AActor* owner = GetController()->GetPawn();
-	if (owner && OtherActor->GetOwner() != owner)
+	if (GetController())
 	{
-		//if (GetController()->GetPawn() && OtherActor->GetOwner())
-			//UE_LOG(LogTemp, Warning, TEXT("Owner: %s, Other Owner: %s"), *GetController()->GetPawn()->GetName(), *OtherActor->GetOwner()->GetName());
-		OtherActor->TakeDamage(m_Damage, {}, {}, owner);
-		Destroy();
+		AActor* owner = GetController()->GetPawn();
+		if (owner && OtherActor->GetOwner() != owner)
+		{
+			//if (GetController()->GetPawn() && OtherActor->GetOwner())
+				//UE_LOG(LogTemp, Warning, TEXT("Owner: %s, Other Owner: %s"), *GetController()->GetPawn()->GetName(), *OtherActor->GetOwner()->GetName());
+			OtherActor->TakeDamage(m_Damage, {}, {}, owner);
+			Destroy();
+		}
 	}
 }
 
