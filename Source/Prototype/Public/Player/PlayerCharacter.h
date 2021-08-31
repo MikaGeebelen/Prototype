@@ -28,9 +28,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
 		UArrowComponent* m_pGunPosition;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
+		UArrowComponent* m_pGunDropPosition;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
 		UWeaponManagerComponent* m_pWeaponManager;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gun")
-		AWeaponBase* m_pWeapon;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Gun")
+	//	AWeaponBase* m_pWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		UCameraComponent* m_pCamera;
@@ -48,6 +50,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	UWeaponManagerComponent* GetWeaponManager();
+	void PickUpWeapon(AWeaponBase* weapon);
 
 private:
 	//Health
@@ -82,4 +85,7 @@ private:
 	void ShootWeapon();
 	void ReleaseWeapon();
 	void UpdateWeaponRotation();
+	void SelectFirstWeapon();
+	void SelectSecondWeapon();
+	void TestFunction();
 };

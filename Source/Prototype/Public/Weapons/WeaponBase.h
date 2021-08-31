@@ -78,6 +78,9 @@ public:
 	bool IsFiring();
 	void IsFiring(bool firing);
 
+	void ResetLocals();
+	void SetVisibility(bool visible);
+
 private:
 	bool m_IsFiring = false;
 

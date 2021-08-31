@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 
 //Custom
+#include "Player/PlayerCharacter.h"
 #include "Weapons/Bullet.h"
 
 // Sets default values
@@ -24,8 +25,8 @@ AWeaponBase::AWeaponBase()
 	m_pShootLocation->SetupAttachment(RootComponent);
 
 	m_pMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	m_pMesh->SetupAttachment(RootComponent);
 	m_pMesh->SetCollisionProfileName("NoCollision");
+	m_pMesh->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -107,15 +108,33 @@ void AWeaponBase::IsFiring(bool firing)
 	m_IsFiring = firing;
 }
 
-void AWeaponBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
+void AWeaponBase::ResetLocals()
 {
-	if (OtherActor == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+	SetActorRelativeLocation({0, 0, 0});
+	SetActorRelativeRotation({0, 0, 0});
+}
+
+void AWeaponBase::SetVisibility(bool visible)
+{
+	m_pMesh->SetVisibility(visible);
+}
+
+void AWeaponBase::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                               UPrimitiveComponent* OtherComp,
+                               int32 OtherBodyIndex,
+                               bool bFromSweep,
+                               const FHitResult& SweepResult)
+{
+	APawn* playerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (IsPickUp() && OtherActor == playerPawn)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Weapon has been picked up!"));
+		APlayerCharacter* player = Cast<APlayerCharacter>(playerPawn);
+		if (player)
+		{
+			SetActorLocation(player->GetActorLocation());
+			player->PickUpWeapon(this);
+		}
 	}
 }
 

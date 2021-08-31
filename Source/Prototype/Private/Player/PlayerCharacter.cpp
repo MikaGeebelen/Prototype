@@ -24,6 +24,9 @@ APlayerCharacter::APlayerCharacter()
 	m_pGunPosition = CreateDefaultSubobject<UArrowComponent>("Gun Position");
 	m_pGunPosition->SetupAttachment(RootComponent);
 
+	m_pGunDropPosition = CreateDefaultSubobject<UArrowComponent>("Gun Drop Position");
+	m_pGunDropPosition->SetupAttachment(RootComponent);
+
 	m_pSpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	m_pSpringArm->SetupAttachment(RootComponent);
 
@@ -32,6 +35,7 @@ APlayerCharacter::APlayerCharacter()
 
 	m_pWeaponManager = CreateDefaultSubobject<UWeaponManagerComponent>("Weapon Manager");
 	m_pWeaponManager->SetAttachmentComponent(RootComponent);
+	m_pWeaponManager->SetWeaponDropLocation(m_pGunDropPosition);
 }
 
 void APlayerCharacter::BeginPlay()
@@ -67,6 +71,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &APlayerCharacter::Jump);
 	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Pressed, this, &APlayerCharacter::ShootWeapon);
 	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Released, this, &APlayerCharacter::ReleaseWeapon);
+	PlayerInputComponent->BindAction("InventorySlot1", EInputEvent::IE_Pressed, this, &APlayerCharacter::SelectFirstWeapon);
+	PlayerInputComponent->BindAction("InventorySlot2", EInputEvent::IE_Pressed, this, &APlayerCharacter::SelectSecondWeapon);
+	PlayerInputComponent->BindAction("TestButton", EInputEvent::IE_Pressed, this, &APlayerCharacter::TestFunction);
 
 	PlayerInputComponent->BindAxis("VerticalMovement", this, &APlayerCharacter::VerticalMovement);
 	PlayerInputComponent->BindAxis("HorizontalMovement", this, &APlayerCharacter::HorizontalMovement);
@@ -79,10 +86,16 @@ UWeaponManagerComponent* APlayerCharacter::GetWeaponManager()
 	return m_pWeaponManager;
 }
 
+void APlayerCharacter::PickUpWeapon(AWeaponBase* weapon)
+{
+	m_pWeaponManager->AddWeapon(weapon);
+	m_UpdateWeaponPos = true;
+}
+
 float APlayerCharacter::TakeDamage(float DamageAmount,
-                                   FDamageEvent const& DamageEvent, 
-                                   AController* EventInstigator, 
-                                   AActor* DamageCauser)
+	FDamageEvent const& DamageEvent,
+	AController* EventInstigator,
+	AActor* DamageCauser)
 {
 	if (m_pHealth)
 	{
@@ -176,37 +189,54 @@ void APlayerCharacter::LookInCameraDirection()
 
 void APlayerCharacter::UpdateWeaponRotation()
 {
-	if (!m_pWeapon)
+	AWeaponBase* weapon = m_pWeaponManager->GetSelectedWeapon();
+	if (!weapon)
 		return;
 
 	FVector cameraForward = m_pSpringArm->GetForwardVector();
 	FRotator rotation = cameraForward.ToOrientationRotator();
-	m_pWeapon->SetActorRelativeRotation(FRotator{ rotation.Pitch - 10.f , 0, 0 });
+	weapon->SetActorRelativeRotation(FRotator{ rotation.Pitch - 10.f , 0, 0 });
+}
+
+void APlayerCharacter::SelectFirstWeapon()
+{
+	m_pWeaponManager->SetSelectedWeapon(0);
+}
+
+void APlayerCharacter::SelectSecondWeapon()
+{
+	m_pWeaponManager->SetSelectedWeapon(1);
+}
+
+void APlayerCharacter::TestFunction()
+{
+	m_pWeaponManager->DropSelectedWeapon();
 }
 
 void APlayerCharacter::ShootWeapon()
 {
 	AWeaponBase* selectedWeapon = m_pWeaponManager->GetSelectedWeapon();
-	if (m_pWeapon != selectedWeapon)
-	{
-		m_pWeapon = selectedWeapon;
-	}
+	//if (m_pWeapon != selectedWeapon)
+	//{
+	//	m_pWeapon = selectedWeapon;
+	//}
 
-	if (m_pWeapon)
+	if (selectedWeapon)
 	{
 		LookInCameraDirection();
-		m_pWeapon->ShootPrimary();
+		selectedWeapon->ShootPrimary();
 		m_IsWeaponFiring = true;
-		m_pWeapon->IsFiring(m_IsWeaponFiring);
+		selectedWeapon->IsFiring(m_IsWeaponFiring);
 	}
 }
 
 void APlayerCharacter::ReleaseWeapon()
 {
-	if (m_pWeapon)
+	AWeaponBase* selectedWeapon = m_pWeaponManager->GetSelectedWeapon();
+	if (selectedWeapon)
 	{
 		m_IsWeaponFiring = false;
-		m_pWeapon->IsFiring(m_IsWeaponFiring);
+		selectedWeapon->IsFiring(m_IsWeaponFiring);
 	}
 }
 
