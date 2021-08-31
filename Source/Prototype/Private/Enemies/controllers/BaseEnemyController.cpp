@@ -136,6 +136,7 @@ void ABaseEnemyController::OnPossess(APawn* InPawn)
 		m_pBlackBoard->SetValueAsObject("SelfActor", InPawn);
 		m_pBlackBoard->SetValueAsBool("IsInRange", false);
 		m_pBlackBoard->SetValueAsBool("IsDamaged", false);
+		m_pBlackBoard->SetValueAsBool("IsWaiting", true);
 	}
 	else
 	{
@@ -144,11 +145,22 @@ void ABaseEnemyController::OnPossess(APawn* InPawn)
 
 }
 
-void ABaseEnemyController::Tick(float DeltaSeconds)
+void ABaseEnemyController::Tick(float deltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
+	Super::Tick(deltaSeconds);
 	//update player pos
-
+	if (m_pBlackBoard->GetValueAsBool("IsWaiting"))
+	{
+		if (m_CountDown < 0)
+		{
+			m_pBlackBoard->SetValueAsBool("IsWaiting", false);
+		}
+		else
+		{
+			m_CountDown -= deltaSeconds;
+		}
+	}
+	
 	if (m_pPlayer)
 	{
 		m_pBlackBoard->SetValueAsObject("Player", m_pPlayer);
