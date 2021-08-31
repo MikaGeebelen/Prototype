@@ -7,6 +7,7 @@
 #include "WeaponManagerComponent.generated.h"
 
 class AWeaponBase;
+class UArrowComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROTOTYPE_API UWeaponManagerComponent : public UActorComponent
@@ -35,16 +36,25 @@ public:
 	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void SetWeaponLocation(const FVector& relativeLocation);
 	void SetAttachmentComponent(USceneComponent* component);
-
-
+	void SetWeaponDropLocation(UArrowComponent* location);
 
 	AWeaponBase* GetSelectedWeapon();
+	void DropSelectedWeapon();
+	void AddWeapon(AWeaponBase* weapon);
+	void RemoveWeapon(AWeaponBase* weaponToRemove);
+
+	void SetSelectedWeapon(int weaponIdx);
 
 private:
 	FVector m_WeaponRelativeLocation;
 	USceneComponent* m_pComponentToAttach;
+	UArrowComponent* m_pDropLocation;
+	int m_CurrentWeaponIndex = 0;
 
-	void SetSelectedWeapon(int weaponIdx);
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+		int m_InventorySlots = 2;
+
+	void SetSelectedWeapon(AWeaponBase* weapon);
 	void HideSelectedWeapon(bool hidden);
 	void UpdateWeaponLocation();
 };
