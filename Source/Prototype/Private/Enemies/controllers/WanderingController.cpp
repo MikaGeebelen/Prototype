@@ -36,3 +36,28 @@ bool AWanderingController::WanderAroundSpawn()
 		return false;
 	}
 }
+
+FVector AWanderingController::GetDodgeLoc()
+{
+	FVector newDir{ m_pEnemy->GetActorLocation() - m_pPlayer->GetActorLocation() };
+	if (FVector::Dist(m_pPlayer->GetActorLocation(),m_pEnemy->GetActorLocation()) < m_Range / 2)
+	{
+		float distance = FMath::RandRange((m_Range * 3) / 4, m_Range);
+		float degrees = FMath::RandRange(-25.0f, 25.0f);
+
+		newDir.Normalize();
+		newDir = newDir * distance;
+		newDir = newDir.RotateAngleAxis(degrees, FVector::UpVector);
+	}
+	else
+	{
+		float distance = FMath::RandRange((m_Range * 1) / 4, m_Range/2);
+		float degrees = FMath::RandRange(-25.0f, 25.0f);
+
+		newDir.Normalize();
+		newDir = newDir * distance;
+		newDir = newDir.RotateAngleAxis(degrees, FVector::UpVector);
+	}
+
+	return  newDir + m_pPlayer->GetActorLocation();
+}

@@ -148,11 +148,12 @@ void ABaseEnemyController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	//update player pos
+
 	if (m_pPlayer)
 	{
+		m_pBlackBoard->SetValueAsObject("Player", m_pPlayer);
 		if (m_pPawnSensing->CouldSeePawn(m_pPlayer))
 		{
-			m_pBlackBoard->SetValueAsObject("Player", m_pPlayer);
 			m_pBlackBoard->SetValueAsBool("HasPlayerInVision", true);
 		}
 		else

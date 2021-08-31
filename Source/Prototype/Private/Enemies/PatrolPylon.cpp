@@ -6,6 +6,9 @@
 #include "Enemies/EnemyManager.h"
 #include "Engine/TargetPoint.h"
 
+#include "Components/ArrowComponent.h"
+#include "Weapons/WeaponManagerComponent.h"
+
 #include "Engine/Classes/Kismet/GameplayStatics.h"
 #include "Math/NumericLimits.h"
 #include "NavModifierComponent.h"
@@ -13,12 +16,20 @@
 #include "NavAreas/NavArea_Null.h"
 #include "NavAreas/NavArea_Default.h"
 
+#include "Components/HealthComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Weapons/WeaponBase.h"
+
 // Sets default values
 APatrolPylon::APatrolPylon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	m_pPillar = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Base"));
 	SetRootComponent(m_pPillar);
+
+	m_pGunPos = CreateDefaultSubobject<UArrowComponent>("GunPos");
+	m_pGunPos->SetupAttachment(RootComponent);
+	m_pWeapon = CreateDefaultSubobject<UWeaponManagerComponent>(TEXT("Weapon"));
 }
 
 AActor* APatrolPylon::GetArriveLocation(FVector otherPylon)
@@ -44,6 +55,8 @@ void APatrolPylon::BeginPlay()
 	Super::BeginPlay();
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APatrolPylon::StaticClass(), m_OtherPylons);
 
+	m_pPlayer = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	
 	m_OtherPylons.Remove(this);
 	
 	FVector dir{ 200,0,0 };
@@ -56,6 +69,31 @@ void APatrolPylon::BeginPlay()
 		m_PatrolStarts[i]->SetActorLocation(GetActorLocation() + dir);
 		dir = dir.RotateAngleAxis(360 / patrolPoints, FVector::UpVector);
 	}
+
+	m_pWeapon->SetWeaponLocation(m_pGunPos->GetComponentLocation());
+	m_pWeapon->SetAttachmentComponent(m_pGunPos);
+
+
+	TArray<UArrowComponent*> spawnLocs{};
+	for (UActorComponent* healthLoc : GetComponentsByClass(UArrowComponent::StaticClass()))
+	{
+		if (healthLoc->ComponentHasTag("Health"))
+		{
+			spawnLocs.Add(Cast<UArrowComponent>(healthLoc));
+		}
+	}
+
+	FActorSpawnParameters params{};
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	for (auto SpawnLoc : spawnLocs)
+	{
+		FVector vector = SpawnLoc->GetComponentLocation();
+		FRotator rotator = SpawnLoc->GetComponentRotation();
+		m_HealthPoints.Add(GetWorld()->SpawnActor(m_pHealthOrbClass, &vector, &rotator, params));
+	}
+	//required
+	ToggleGates(true);
 }
 
 AActor* APatrolPylon::GetStartLocation(FVector otherPylon)
@@ -115,48 +153,116 @@ bool APatrolPylon::IsPatrolDead()
 	return true;
 }
 
+void APatrolPylon::Destroyed()
+{
+	ToggleGates(true);
+}
+
+void APatrolPylon::ToggleGates(bool canPass)
+{
+	FAttachmentTransformRules attachRules
+	{
+		EAttachmentRule::SnapToTarget,
+		EAttachmentRule::KeepRelative,
+		EAttachmentRule::KeepRelative,
+		true
+	};
+
+	if (m_pWeapon && m_pWeapon->GetSelectedWeapon())
+	{
+		m_pWeapon->GetSelectedWeapon()->AttachToComponent(m_pGunPos, attachRules);
+		m_pWeapon->GetSelectedWeapon()->AddActorLocalOffset({ 50,0,0 });
+	}
+	
+	for (AActor* pEntrance : m_Entrances)
+	{
+		//UNavModifierComponent* pNav = Cast<UNavModifierComponent>(pEntrance->GetComponentByClass(UNavModifierComponent::StaticClass()));
+		//if (pNav)
+		//{
+		//	pNav->SetAreaClass(UNavArea_Default::StaticClass());
+		//}
+
+		USceneComponent* pRoot = pEntrance->GetRootComponent();
+		UStaticMeshComponent* pMesh = Cast<UStaticMeshComponent>(pRoot);
+		if (pMesh)
+		{
+			if (canPass)
+			{
+				pMesh->SetCollisionProfileName({ "OverlapAll" });
+			}
+			else
+			{
+				pMesh->SetCollisionProfileName({ "BlockAll" });
+			}
+		}
+	}
+}
+
+void APatrolPylon::ShootPlayer()
+{
+	FVector playerDir = m_pPlayer->GetActorLocation() - GetActorLocation();
+	playerDir.Z = 0;
+	playerDir.Normalize();
+
+	m_pGunPos->SetRelativeRotation(playerDir.ToOrientationRotator());
+	//m_pWeapon->GetSelectedWeapon()->ShootPrimary();
+}
+
+void APatrolPylon::SpawnDefenses()
+{
+	UPrototypeGameInstance* instance = Cast<UPrototypeGameInstance>(GetGameInstance());
+	instance->GetEnemyManager()->SpawnWanderingEnemy(GetActorLocation() + FVector{ 250,0,0} , 1000 );
+	instance->GetEnemyManager()->SpawnWanderingEnemy(GetActorLocation() + FVector{ -250,0,0}, 1000 );
+}
+
 // Called every frame
 void APatrolPylon::Tick(float deltaTime)
 {
 	Super::Tick(deltaTime);
-	//spawn patrols
-	m_CanSpawn = IsPatrolDead();
 
-	if (m_CanSpawn)
-	{
-		m_TimeToSpawn += deltaTime;
-		if (m_TimeToSpawn >= m_MaxTimeToSpawn)
-		{
-			m_TimeToSpawn = 0;
-			if (!SendPatrol())
-			{
-				m_CanSpawn = false;
-			}
-		}
-	}
 
 	if (m_IsPlayerFight)
 	{
-		for (AActor* pEntrance : m_Entrances)
+		if (!m_IsInCombat)
 		{
-			pEntrance->SetActorEnableCollision(true);
+			ToggleGates(false);
+			m_IsInCombat = true;
+		}
 
-			USceneComponent* pRoot = pEntrance->GetRootComponent();
+		ShootPlayer();
 
-			UNavModifierComponent* pNav = Cast<UNavModifierComponent>(pEntrance->GetComponentByClass(UNavModifierComponent::StaticClass()));
-			if (pNav)
+		for (AActor* pHealthPoint : m_HealthPoints)
+		{
+			UHealthComponent* pHealth = Cast<UHealthComponent>(pHealthPoint->GetComponentByClass(UHealthComponent::StaticClass()));
+			if (pHealth->IsDead())
 			{
-				pNav->SetAreaClass(UNavArea_Default::StaticClass());
+				SpawnDefenses();
+				m_HealthPoints.Remove(pHealthPoint);
+				pHealthPoint->Destroy();
+				if (m_HealthPoints.Num() == 0)
+				{
+					Destroy();
+				}
 			}
-
-			
-			UStaticMeshComponent* pMesh = Cast<UStaticMeshComponent>(pRoot);
-			if (pMesh)
+		}
+	}
+	else
+	{
+		//spawn patrols
+		m_CanSpawn = IsPatrolDead();
+		if (m_CanSpawn)
+		{
+			m_TimeToSpawn += deltaTime;
+			if (m_TimeToSpawn >= m_MaxTimeToSpawn)
 			{
-				pMesh->SetCollisionProfileName({ "BlockAll" });
+				m_TimeToSpawn = 0;
+				if (!SendPatrol())
+				{
+					m_CanSpawn = false;
+				}
 			}
-			
 		}
 	}
 }
+
 

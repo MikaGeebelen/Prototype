@@ -35,12 +35,23 @@ protected:
 	virtual bool SendPatrol();
 
 	virtual bool IsPatrolDead();
-	
+
+	virtual void Destroyed() override;
+
+	void ToggleGates(bool canPass);
+
+	void ShootPlayer();
+
+	void SpawnDefenses();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
 	bool m_IsPlayerFight = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
 	bool m_CanSpawn = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
+	bool m_IsInCombat = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AISettings");
 	float m_TimeToSpawn = 0;
@@ -49,27 +60,29 @@ protected:
 	float m_MaxTimeToSpawn = 20;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
-	TArray<UArrowComponent*> m_HealhtOrbSpawnPoints;
+	UArrowComponent* m_pGunPos;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
-	TArray<UArrowComponent*> m_WeaponSpawnPoints;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
-	UWeaponManagerComponent* m_pWeapons;
+	UWeaponManagerComponent* m_pWeapon;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
 	TArray<AActor*>  m_PatrolStarts;
 
-private:
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite);
+	APawn* m_pPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	TSubclassOf<AActor> m_pHealthOrbClass;
+
 	TArray<AActor*> m_HealthPoints;
-	
+
 	TArray<AActor*> m_OtherPylons;
 
 	TArray<AActor*> m_CurrentPatrolUnits;
-	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	
 };
