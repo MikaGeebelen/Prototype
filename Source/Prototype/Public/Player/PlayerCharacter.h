@@ -53,9 +53,6 @@ public:
 	void PickUpWeapon(AWeaponBase* weapon);
 
 private:
-	//Health
-	UPROPERTY(EditAnywhere, Category = "Health")
-		int m_PlayerHealth = 10;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void RestartLevel();
@@ -79,7 +76,7 @@ private:
 
 	//Shooting
 	bool m_UpdateWeaponPos = true;
-	bool m_IsWeaponFiring = false;
+	bool m_IsRotationOk = false;
 	bool m_FireWeapon = false;
 	FRotator m_DefaultCameraRotation;
 

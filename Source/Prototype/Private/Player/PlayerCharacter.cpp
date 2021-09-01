@@ -41,7 +41,6 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	m_pHealth->SetMaxHealth(m_PlayerHealth, true);
 	m_OriginalRotation = m_pSpringArm->GetTargetRotation();
 	m_DefaultCameraRotation = m_pCamera->GetRelativeRotation();
 }
@@ -56,11 +55,17 @@ void APlayerCharacter::Tick(float DeltaTime)
 		m_UpdateWeaponPos = false;
 	}
 
-	if (m_IsWeaponFiring || m_FireWeapon)
+	if (m_IsRotationOk)
+	{
+		ShootWeapon();
+		m_IsRotationOk = false;
+	}
+	
+	if (m_FireWeapon)
 	{
 		LookInCameraDirection();
 		UpdateWeaponRotation();
-		ShootWeapon();
+		m_IsRotationOk = true;
 		m_FireWeapon = false;
 	}
 }
@@ -227,8 +232,7 @@ void APlayerCharacter::ShootWeapon()
 	{
 		LookInCameraDirection();
 		selectedWeapon->ShootPrimary();
-		m_IsWeaponFiring = true;
-		selectedWeapon->IsFiring(m_IsWeaponFiring);
+		selectedWeapon->IsFiring(true);
 	}
 }
 
@@ -242,8 +246,7 @@ void APlayerCharacter::ReleaseWeapon()
 	AWeaponBase* selectedWeapon = m_pWeaponManager->GetSelectedWeapon();
 	if (selectedWeapon)
 	{
-		m_IsWeaponFiring = false;
-		selectedWeapon->IsFiring(m_IsWeaponFiring);
+		selectedWeapon->IsFiring(false);
 	}
 }
 

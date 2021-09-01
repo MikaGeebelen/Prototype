@@ -44,6 +44,8 @@ protected:
 
 	void SpawnDefenses();
 
+	void AreOtherPylonsActive();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
 	bool m_IsPlayerFight = false;
 	

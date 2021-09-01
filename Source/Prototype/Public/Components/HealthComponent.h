@@ -42,7 +42,7 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Health")
 		int m_Health;
-	UPROPERTY(VisibleAnywhere, Category = "Health")
+	UPROPERTY(EditAnywhere, Category = "Health")
 		int m_MaxHealth = 10;
 
 	void ClampHealth();

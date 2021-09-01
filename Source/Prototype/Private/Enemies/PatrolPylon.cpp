@@ -119,25 +119,30 @@ bool APatrolPylon::SendPatrol()
 
 	const int maxTries = 100;
 	int tries = 0;
-	
-	for (int i{ rand() % m_OtherPylons.Num() }; i< m_OtherPylons.Num(); i = rand() % m_OtherPylons.Num())
-	{
-		if (m_OtherPylons[i])
-		{
-			patrolPoints.Push(Cast<APatrolPylon>(m_OtherPylons[i])->GetArriveLocation(GetActorLocation()));
-			patrolPoints.Push(GetStartLocation(m_OtherPylons[i]->GetActorLocation()));
-			UPrototypeGameInstance* instance = Cast<UPrototypeGameInstance>(GetGameInstance());
-			for (int j{}; j < m_NrOfEnemies; j++)
-			{
-				m_CurrentPatrolUnits.Push(instance->GetEnemyManager()->SpawnPatrollingEnemy(patrolPoints[1]->GetActorLocation(), patrolPoints, 1000));
-			}
-			return true;
-		}
 
-		tries++;
-		if (tries >= maxTries)
+	AreOtherPylonsActive();
+	
+	if (m_OtherPylons.Num() < 1)
+	{
+		for (int i{ rand() % m_OtherPylons.Num() }; i < m_OtherPylons.Num(); i = rand() % m_OtherPylons.Num())
 		{
-			return false;
+			if (m_OtherPylons[i])
+			{
+				patrolPoints.Push(Cast<APatrolPylon>(m_OtherPylons[i])->GetArriveLocation(GetActorLocation()));
+				patrolPoints.Push(GetStartLocation(m_OtherPylons[i]->GetActorLocation()));
+				UPrototypeGameInstance* instance = Cast<UPrototypeGameInstance>(GetGameInstance());
+				for (int j{}; j < m_NrOfEnemies; j++)
+				{
+					m_CurrentPatrolUnits.Push(instance->GetEnemyManager()->SpawnPatrollingEnemy(patrolPoints[1]->GetActorLocation(), patrolPoints, 1000));
+				}
+				return true;
+			}
+
+			tries++;
+			if (tries >= maxTries)
+			{
+				return false;
+			}
 		}
 	}
 	return false;
@@ -217,6 +222,23 @@ void APatrolPylon::SpawnDefenses()
 	UPrototypeGameInstance* instance = Cast<UPrototypeGameInstance>(GetGameInstance());
 	instance->GetEnemyManager()->SpawnWanderingEnemy(GetActorLocation() + FVector{ 250,0,0} , 1000 );
 	instance->GetEnemyManager()->SpawnWanderingEnemy(GetActorLocation() + FVector{ -250,0,0}, 1000 );
+}
+
+void APatrolPylon::AreOtherPylonsActive()
+{
+	TArray<AActor*> destroyedPylons{};
+	for (AActor* OtherPylon : m_OtherPylons)
+	{
+		if (!IsValid(OtherPylon))
+		{
+			destroyedPylons.Add(OtherPylon);
+		}
+	}
+
+	for (AActor* OtherPylon : destroyedPylons)
+	{
+		m_OtherPylons.Remove(OtherPylon);
+	}
 }
 
 // Called every frame
