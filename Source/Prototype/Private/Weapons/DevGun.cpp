@@ -46,7 +46,7 @@ void ADevGun::ShootPrimary()
 			DrawDebugLine(GetWorld(), start, end, { 255, 0, 0 }, false, 10);
 
 		if (m_ShootSoundEffect)
-			UGameplayStatics::PlaySound2D(GetWorld(), m_ShootSoundEffect);
+			UGameplayStatics::PlaySound2D(GetWorld(), m_ShootSoundEffect, 0.5f);
 
 		ShootBullet();
 		//if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECollisionChannel::ECC_Pawn, linetraceParams))

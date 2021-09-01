@@ -79,10 +79,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	TSubclassOf<AActor> m_pHealthOrbClass;
 
+	UPROPERTY()
 	TArray<AActor*> m_HealthPoints;
 
+	UPROPERTY()
 	TArray<AActor*> m_OtherPylons;
 
+	UPROPERTY()
 	TArray<AActor*> m_CurrentPatrolUnits;
 
 public:	

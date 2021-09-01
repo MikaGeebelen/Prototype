@@ -68,6 +68,19 @@ void APlayerCharacter::Tick(float DeltaTime)
 		m_IsRotationOk = true;
 		m_FireWeapon = false;
 	}
+
+	if (m_pWeaponManager)
+	{
+		AWeaponBase* weapon = m_pWeaponManager->GetSelectedWeapon();
+		if (weapon)
+		{
+			if (weapon->IsFiring())
+			{
+				LookInCameraDirection();
+				UpdateWeaponRotation();
+			}
+		}
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -81,6 +94,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("InventorySlot1", EInputEvent::IE_Pressed, this, &APlayerCharacter::SelectFirstWeapon);
 	PlayerInputComponent->BindAction("InventorySlot2", EInputEvent::IE_Pressed, this, &APlayerCharacter::SelectSecondWeapon);
 	PlayerInputComponent->BindAction("TestButton", EInputEvent::IE_Pressed, this, &APlayerCharacter::TestFunction);
+	PlayerInputComponent->BindAction("Close", EInputEvent::IE_Pressed, this, &APlayerCharacter::CloseGame);
 
 	PlayerInputComponent->BindAxis("VerticalMovement", this, &APlayerCharacter::VerticalMovement);
 	PlayerInputComponent->BindAxis("HorizontalMovement", this, &APlayerCharacter::HorizontalMovement);
@@ -218,6 +232,11 @@ void APlayerCharacter::SelectSecondWeapon()
 void APlayerCharacter::TestFunction()
 {
 	m_pWeaponManager->DropSelectedWeapon();
+}
+
+void APlayerCharacter::CloseGame()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, true);
 }
 
 void APlayerCharacter::ShootWeapon()

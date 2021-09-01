@@ -87,4 +87,7 @@ private:
 	void SelectFirstWeapon();
 	void SelectSecondWeapon();
 	void TestFunction();
+
+	//Menus
+	void CloseGame();
 };

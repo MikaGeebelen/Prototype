@@ -122,11 +122,11 @@ bool APatrolPylon::SendPatrol()
 
 	AreOtherPylonsActive();
 	
-	if (m_OtherPylons.Num() < 1)
+	if (!(m_OtherPylons.Num() < 1))
 	{
 		for (int i{ rand() % m_OtherPylons.Num() }; i < m_OtherPylons.Num(); i = rand() % m_OtherPylons.Num())
 		{
-			if (m_OtherPylons[i])
+			if (IsValid(m_OtherPylons[i]))
 			{
 				patrolPoints.Push(Cast<APatrolPylon>(m_OtherPylons[i])->GetArriveLocation(GetActorLocation()));
 				patrolPoints.Push(GetStartLocation(m_OtherPylons[i]->GetActorLocation()));

@@ -75,3 +75,4 @@ DerivedDataCache/*
 
 # Enc temp folder
 enc_temp_folder/*
+*.lnk
