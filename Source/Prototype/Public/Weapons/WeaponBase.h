@@ -65,6 +65,7 @@ protected:
 
 	void ResetFireRateTime();
 	void ShootBullet();
+	void ShootBullet(const FVector& direction);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -59,7 +59,7 @@ void APatrolPylon::BeginPlay()
 	
 	m_OtherPylons.Remove(this);
 	
-	FVector dir{ 200,0,0 };
+	FVector dir{ 300,0,0 };
 
 	const int patrolPoints = 4;
 
@@ -127,7 +127,10 @@ bool APatrolPylon::SendPatrol()
 			patrolPoints.Push(Cast<APatrolPylon>(m_OtherPylons[i])->GetArriveLocation(GetActorLocation()));
 			patrolPoints.Push(GetStartLocation(m_OtherPylons[i]->GetActorLocation()));
 			UPrototypeGameInstance* instance = Cast<UPrototypeGameInstance>(GetGameInstance());
-			m_CurrentPatrolUnits.Push(instance->GetEnemyManager()->SpawnPatrollingEnemy(patrolPoints[1]->GetActorLocation(), patrolPoints, 1000));
+			for (int j{}; j < m_NrOfEnemies; j++)
+			{
+				m_CurrentPatrolUnits.Push(instance->GetEnemyManager()->SpawnPatrollingEnemy(patrolPoints[1]->GetActorLocation(), patrolPoints, 1000));
+			}
 			return true;
 		}
 
@@ -170,8 +173,9 @@ void APatrolPylon::ToggleGates(bool canPass)
 
 	if (m_pWeapon && m_pWeapon->GetSelectedWeapon())
 	{
+		m_pWeapon->SetWeaponLocation(m_pGunPos->GetComponentLocation());
 		m_pWeapon->GetSelectedWeapon()->AttachToComponent(m_pGunPos, attachRules);
-		m_pWeapon->GetSelectedWeapon()->AddActorLocalOffset({ 50,0,0 });
+		m_pWeapon->GetSelectedWeapon()->AddActorLocalOffset({ 100,0,0 });
 	}
 	
 	for (AActor* pEntrance : m_Entrances)
@@ -231,19 +235,30 @@ void APatrolPylon::Tick(float deltaTime)
 
 		ShootPlayer();
 
+		TArray<AActor*> toBeRemoved{};
+
 		for (AActor* pHealthPoint : m_HealthPoints)
 		{
 			UHealthComponent* pHealth = Cast<UHealthComponent>(pHealthPoint->GetComponentByClass(UHealthComponent::StaticClass()));
 			if (pHealth->IsDead())
 			{
 				SpawnDefenses();
-				m_HealthPoints.Remove(pHealthPoint);
+				//m_HealthPoints.Remove(pHealthPoint);
+				toBeRemoved.Add(pHealthPoint);
 				pHealthPoint->Destroy();
-				if (m_HealthPoints.Num() == 0)
-				{
-					Destroy();
-				}
+
 			}
+		}
+
+		for (AActor* pHealthPoint : toBeRemoved)
+		{
+			m_HealthPoints.Remove(pHealthPoint);
+		}
+		toBeRemoved.Empty();
+
+		if (m_HealthPoints.Num() == 0)
+		{
+			Destroy();
 		}
 	}
 	else

@@ -33,7 +33,7 @@ protected:
 
 public:	
 	// Called every frame
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void SetWeaponLocation(const FVector& relativeLocation);
 	void SetAttachmentComponent(USceneComponent* component);
 	void SetWeaponDropLocation(UArrowComponent* location);
@@ -50,6 +50,8 @@ private:
 	USceneComponent* m_pComponentToAttach;
 	UArrowComponent* m_pDropLocation;
 	int m_CurrentWeaponIndex = 0;
+
+	bool m_Once = true;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 		int m_InventorySlots = 2;

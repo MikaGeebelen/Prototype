@@ -25,4 +25,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void ShootPrimary() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Bullets")
+		int m_ShotsFired = 4;
+
+	UPROPERTY(EditAnywhere, Category = "Bullets")
+		float m_SpreadAngle = 15.f;
+
+	UPROPERTY(EditAnywhere, Category = "Bullets")
+		float m_MaxZOffset = 1.f;
 };

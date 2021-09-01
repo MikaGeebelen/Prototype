@@ -29,6 +29,7 @@ protected:
 	UPrototypeGameInstance* m_pInstance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnerSettings");
 	float m_MaxTimePerWave = 30.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SpawnerSettings");
 	float m_TimePassed = 0.f;
 	int m_WaveLevel = 0;
 	

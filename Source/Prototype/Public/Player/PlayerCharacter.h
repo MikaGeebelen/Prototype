@@ -80,9 +80,11 @@ private:
 	//Shooting
 	bool m_UpdateWeaponPos = true;
 	bool m_IsWeaponFiring = false;
+	bool m_FireWeapon = false;
 	FRotator m_DefaultCameraRotation;
 
 	void ShootWeapon();
+	void FireWeapon();
 	void ReleaseWeapon();
 	void UpdateWeaponRotation();
 	void SelectFirstWeapon();

@@ -56,10 +56,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 		m_UpdateWeaponPos = false;
 	}
 
-	if (m_IsWeaponFiring)
+	if (m_IsWeaponFiring || m_FireWeapon)
 	{
 		LookInCameraDirection();
 		UpdateWeaponRotation();
+		ShootWeapon();
+		m_FireWeapon = false;
 	}
 }
 
@@ -69,7 +71,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	//Bind input to functions
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &APlayerCharacter::Jump);
-	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Pressed, this, &APlayerCharacter::ShootWeapon);
+	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("Shoot", EInputEvent::IE_Released, this, &APlayerCharacter::ReleaseWeapon);
 	PlayerInputComponent->BindAction("InventorySlot1", EInputEvent::IE_Pressed, this, &APlayerCharacter::SelectFirstWeapon);
 	PlayerInputComponent->BindAction("InventorySlot2", EInputEvent::IE_Pressed, this, &APlayerCharacter::SelectSecondWeapon);
@@ -228,6 +230,11 @@ void APlayerCharacter::ShootWeapon()
 		m_IsWeaponFiring = true;
 		selectedWeapon->IsFiring(m_IsWeaponFiring);
 	}
+}
+
+void APlayerCharacter::FireWeapon()
+{
+	m_FireWeapon = true;
 }
 
 void APlayerCharacter::ReleaseWeapon()

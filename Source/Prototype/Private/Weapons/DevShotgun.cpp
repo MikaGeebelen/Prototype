@@ -6,6 +6,7 @@
 //Engine
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ADevShotgun::ADevShotgun()
 {
@@ -47,7 +48,13 @@ void ADevShotgun::ShootPrimary()
 		if (m_ShootSoundEffect)
 			UGameplayStatics::PlaySound2D(GetWorld(), m_ShootSoundEffect);
 
-		ShootBullet();
+		for (int i{}; i < m_ShotsFired; i++)
+		{
+			FVector bulletDirection = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(GetActorForwardVector(), m_SpreadAngle / 2.f);
+			bulletDirection.Z = UKismetMathLibrary::FClamp(bulletDirection.Z, -m_MaxZOffset, m_MaxZOffset) + GetActorForwardVector().Z;
+			ShootBullet(bulletDirection);
+			UE_LOG(LogTemp, Warning, TEXT("Bullet %i is shot"), i);
+		}
 		ResetFireRateTime();
 	}
 }

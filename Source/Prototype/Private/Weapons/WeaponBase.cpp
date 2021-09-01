@@ -44,8 +44,12 @@ bool AWeaponBase::CanShoot()
 bool AWeaponBase::IsPickUp()
 {
 	if (GetOwner())
+	{
+		m_pCollider->SetGenerateOverlapEvents(false);
 		return false;
+	}
 
+	m_pCollider->SetGenerateOverlapEvents(true);
 	return true;
 }
 
@@ -80,6 +84,11 @@ void AWeaponBase::ResetFireRateTime()
 
 void AWeaponBase::ShootBullet()
 {
+	ShootBullet(m_pShootLocation->GetForwardVector());
+}
+
+void AWeaponBase::ShootBullet(const FVector& direction)
+{
 	if (m_BulletType && m_pShootLocation)
 	{
 		FActorSpawnParameters params{};
@@ -91,7 +100,7 @@ void AWeaponBase::ShootBullet()
 		{
 			bullet->SetActorLocation(m_pShootLocation->GetComponentLocation());
 			bullet->SetActorRotation(m_pShootLocation->GetComponentRotation());
-			bullet->SetDirection(m_pShootLocation->GetForwardVector());
+			bullet->SetDirection(direction);
 			bullet->SetDamage(m_Damage);
 
 			if (GetOwner())

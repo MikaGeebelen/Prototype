@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AISettings");
 	bool m_IsInCombat = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AISettings");
+	int m_NrOfEnemies = 3;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AISettings");
 	float m_TimeToSpawn = 0;
 

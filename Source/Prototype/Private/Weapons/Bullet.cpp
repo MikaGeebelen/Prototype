@@ -23,6 +23,8 @@ ABullet::ABullet()
 	m_pMesh->SetupAttachment(m_pCapsuleCollider);
 
 	m_pMovement = CreateDefaultSubobject<UFloatingPawnMovement>("Movement");
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -30,12 +32,6 @@ void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
 	m_pCapsuleCollider->OnComponentBeginOverlap.AddDynamic(this, &ABullet::BeginOverlap);
-}
-
-void ABullet::Destroyed()
-{
-	Super::Destroyed();
-	UE_LOG(LogTemp, Warning, TEXT("Bullet Destroyed"));
 }
 
 // Called every frame
@@ -66,6 +62,15 @@ void ABullet::SetDamage(float damage)
 	m_Damage = damage;
 }
 
+bool ABullet::IsBullet(AActor* bulletActor)
+{
+	ABullet* bullet = Cast<ABullet>(bulletActor);
+	if (bullet)
+		return true;
+
+	return false;
+}
+
 void ABullet::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -73,13 +78,14 @@ void ABullet::BeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (GetController())
+	if (GetController() && OtherActor)
 	{
+		if (IsBullet(OtherActor))
+			return;
+
 		AActor* owner = GetController()->GetPawn();
 		if (owner && OtherActor->GetOwner() != owner)
 		{
-			//if (GetController()->GetPawn() && OtherActor->GetOwner())
-				//UE_LOG(LogTemp, Warning, TEXT("Owner: %s, Other Owner: %s"), *GetController()->GetPawn()->GetName(), *OtherActor->GetOwner()->GetName());
 			OtherActor->TakeDamage(m_Damage, {}, {}, owner);
 			Destroy();
 		}

@@ -9,7 +9,7 @@
 // Sets default values for this component's properties
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 
@@ -18,19 +18,21 @@ void UWeaponManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (m_WeaponsToSpawn.Num() > m_InventorySlots)
+		m_InventorySlots = m_SpawnedWeapons.Num();
+
 	for (TSubclassOf<AWeaponBase> weaponClass : m_WeaponsToSpawn)
 	{
 		AWeaponBase* spawnedWeapon = Cast<AWeaponBase>(GetWorld()->SpawnActor(weaponClass));
-		spawnedWeapon->SetHidden(true);
-		spawnedWeapon->SetOwner(GetOwner());
-		m_SpawnedWeapons.Add(spawnedWeapon);
+		//spawnedWeapon->SetHidden(true);
+		//spawnedWeapon->SetOwner(GetOwner());
+		//m_SpawnedWeapons.Add(spawnedWeapon);
+		AddWeapon(spawnedWeapon);
 	}
 
-	if (m_SpawnedWeapons.Num() > m_InventorySlots)
-		m_InventorySlots = m_SpawnedWeapons.Num();
 
-	SetSelectedWeapon(m_CurrentWeaponIndex);
-	UpdateWeaponLocation();
+	//SetSelectedWeapon(m_CurrentWeaponIndex);
+
 }
 
 void UWeaponManagerComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
@@ -191,10 +193,14 @@ void UWeaponManagerComponent::UpdateWeaponLocation()
 
 
 // Called every frame
-//void UWeaponManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-//{
-//	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-//
-//	// ...
-//}
+void UWeaponManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (m_Once)
+	{
+		UpdateWeaponLocation();
+		m_Once = false;
+	}
+	// ...
+}
 

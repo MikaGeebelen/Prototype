@@ -31,7 +31,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Destroyed() override;
 
 public:	
 	// Called every frame
@@ -51,6 +50,8 @@ private:
 			int32 OtherBodyIndex,
 			bool bFromSweep,
 			const FHitResult& SweepResult);
+
+	bool IsBullet(AActor* bulletActor);
 
 	float m_Damage = 1.f;
 
